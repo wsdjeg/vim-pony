@@ -1,0 +1,595 @@
+" Vim plugin file
+" Language:     Pony
+" Maintainer:   Jak Wings
+" Last Change:  2016 May 25
+
+if exists('b:did_autoload')
+  finish
+endif
+
+" TODO: Make sure echomsg is off for release.
+let s:cpo_save = &cpo
+set cpo&vim
+
+
+let s:skip = '<SID>InCommentOrLiteral(line("."), col("."))'
+let s:skip2 = '<SID>InLiteral(line("."), col(".")) || <SID>InComment(line("."), col(".")) == 1'
+let s:skip3 = '<SID>InCommentOrLiteral(line("."), col(".")) || <SID>InCaseGuard(line("."), col("."))'
+let s:cfstart = '\v<%(ifdef|if|match|while|for|repeat|try|with|recover|object|lambda)>'
+let s:cfmiddle = '\v<%(then|elseif|else|until|do|in)>|\|'
+let s:cfend = '\v<end>\zs'
+" TODO: optimization
+let s:bstartp = '\v^%(''%(\\''|[^''])*''|[^'']){-}<%(ifdef|if|then|elseif|else|(match)|while|for|in|do|try|with|recover|repeat|until|object|(lambda))>'
+
+function! pony#Indent()
+  if v:lnum <= 1
+    return 0
+  endif
+
+  call cursor(v:lnum, 1)
+  let l:pnzpos = searchpos('.', 'cbnW')
+  if l:pnzpos == [0, 0]
+    return 0
+  endif
+
+  if s:InComment2(l:pnzpos) > 1
+    let l:indent = searchpairpos('/\*', '', '/\@<!\*/\zs', 'cbnW', s:skip2)[1]
+    if getline(v:lnum) !~# '^\s*\*'
+      let l:indent += 2
+    endif
+    "echomsg 'Comment' (l:pnzpos[0] . '-' . v:lnum) l:indent
+    return l:indent
+  endif
+
+  if s:InLiteral2(l:pnzpos)
+    "echomsg 'String' (l:pnzpos[0] . '-' . v:lnum) -1
+    return -1
+  endif
+
+  unlet! l:pnzpos
+
+  " NOTE: Lines started in comments and strings are checked already.
+
+  let l:pnblnum = s:PrevNonblank(v:lnum - 1)
+  if l:pnblnum < 1
+    return 0
+  endif
+
+  let l:pnbline = getline(l:pnblnum)
+  let l:pnbindent = indent(l:pnblnum)
+
+  let l:line = getline(v:lnum)
+  let l:indent = l:pnbindent
+  let l:shiftwidth = shiftwidth()
+
+  let l:continued = 0
+  let l:ppnblnum = s:PrevNonblank(l:pnblnum - 1)
+  " If the previous line is also continuing another line,
+  if s:IsContinued(l:ppnblnum) && !s:IsContinued(l:pnblnum)
+    "echomsg 'Continued2' l:ppnblnum indent(l:ppnblnum)
+    " if the previous line is part of the definition of a class,
+    if getline(l:ppnblnum) =~# '\v^\s*%(actor|class|struct|primitive|trait|interface|type)>'
+      " reset the indent level.
+      "echomsg 'Continuing9' (l:ppnblnum . '-' . v:lnum) l:shiftwidth
+      let l:continued = 1
+      let l:indent = l:shiftwidth
+    " if the previous line is part of the definition of a method,
+    elseif getline(l:ppnblnum) =~# '\v^\s*%(fun|new|be)>'
+      " reset the indent level.
+      "echomsg 'Continuing8' (l:ppnblnum . '-' . v:lnum) (l:shiftwidth * 2)
+      let l:continued = 1
+      let l:indent = l:shiftwidth * 2
+    " if the previous line is the start of a definition body,
+    elseif l:pnbline =~# '=>\s*$'
+      " indent this line based on the level of the previous previous line.
+      "echomsg 'Continuing7' (l:ppnblnum . '-' . v:lnum) (indent(l:ppnblnum) + l:shiftwidth)
+      let l:continued = 1
+      let l:indent = indent(l:ppnblnum) + l:shiftwidth
+    else
+      " keep using the previous indent.
+      "echomsg 'Continuing6' (l:pnblnum . '-' . v:lnum) l:pnbindent
+      let l:continued = 1
+      let l:indent = l:pnbindent
+    endif
+  " If the previous line ends with a unary or binary operator,
+  elseif s:IsContinued(l:pnblnum)
+    "echomsg 'Continued1' l:pnblnum l:pnbindent
+    if s:IsContinued(l:ppnblnum)
+      " keep using the previous indent.
+      "echomsg 'Continuing5' (l:pnblnum . '-' . v:lnum) l:pnbindent
+      let l:continued = 1
+      let l:indent = l:pnbindent
+    " if the previous line is part of the definition of a class,
+    elseif l:pnbline =~# '\v^\s*%(actor|class|struct|primitive|trait|interface|type)>'
+      " reset the indent level.
+      "echomsg 'Continuing4' (l:pnblnum . '-' . v:lnum) (l:shiftwidth * 2)
+      let l:continued = 1
+      let l:indent = l:shiftwidth * 2
+    " if the previous line is part of the definition of a method,
+    elseif l:pnbline =~# '\v^\s*%(fun|new|be)>'
+      " reset the indent level.
+      "echomsg 'Continuing3' (l:pnblnum . '-' . v:lnum) (l:shiftwidth * 2)
+      let l:continued = 1
+      let l:indent = l:shiftwidth * 2
+    " if the previous line is the start of a definition body,
+    elseif l:pnbline =~# '=>\s*$'
+      " indent this line.
+      "echomsg 'Continuing2' (l:pnblnum . '-' . v:lnum) (l:pnbindent + l:shiftwidth)
+      let l:continued = 1
+      let l:indent = l:pnbindent + l:shiftwidth
+    else
+      " indent this line twice as far.
+      "echomsg 'Continuing1' (l:pnblnum . '-' . v:lnum) (l:pnbindent + l:shiftwidth * 2)
+      let l:continued = 1
+      let l:indent = l:pnbindent + l:shiftwidth * 2
+    endif
+  endif
+
+  unlet! l:ppnblnum
+
+  " TODO: optimization
+  " If the previous line contains an unmatched opening bracket
+  if !l:continued && l:pnbline =~# '[{\[(]'
+    " if the line ends with an opening bracket,
+    if l:pnbline =~# '[{\[(]\s*$' && !s:InCommentOrLiteral(l:pnblnum, col([l:pnblnum, '$']) - 1)
+      " indent this line.
+      let l:indent += l:shiftwidth
+    else
+      " find the unmatched opening bracket,
+      " NOTE: The cursor must not be at an matched closing bracket.
+      "  | ( (()) //(
+      "        ^^----- not at these places
+      let l:start = [0, 0]
+      let l:end = col([l:pnblnum, '$']) - 1
+      call cursor(l:pnblnum, l:end)
+      while l:end > 0
+        let l:start = s:OuterPos(l:start, searchpairpos('(', '', ')', 'bnW', s:skip, l:pnblnum))
+        let l:start = s:OuterPos(l:start, searchpairpos('\[', '', '\]', 'bnW', s:skip, l:pnblnum))
+        let l:start = s:OuterPos(l:start, searchpairpos('{', '', '}', 'bnW', s:skip, l:pnblnum))
+        if l:start == [0, 0]
+          break
+        endif
+        " find the matched closing bracket on the same line,
+        call cursor(l:start[0], l:start[1])
+        let l:c = s:CharAtCursor(l:start[0], l:start[1])
+        if searchpair(escape(l:c, '['), '', escape(tr(l:c, '([{', ')]}'), ']'),
+              \ 'znW', s:skip, l:pnblnum) < 1
+          " the unmatched opening bracket is found,
+          break
+        endif
+        let l:start = [0, 0]
+        let l:end = l:start[1]
+      endwhile
+      if l:start != [0, 0]
+        " indent this line.
+        "echomsg 'Open bracket' (l:pnblnum . '-' . v:lnum) (l:indent + l:shiftwidth)
+        let l:indent += l:shiftwidth
+      endif
+    endif
+  endif
+
+  unlet! l:start l:end l:c
+
+  " If there is a matched closing bracket on the previous line,
+  " NOTE:
+  " >|[
+  "  |  (1 -
+  "  |      1) * 2]
+  "  |  command
+  "   ^
+  call cursor(l:pnblnum, 1)
+  " find the last closing bracket,
+  let l:end = [0, 0]
+  let l:end = s:OuterPos(l:end, searchpairpos('(', '', ')', 'zncr', s:skip, l:pnblnum))
+  let l:end = s:OuterPos(l:end, searchpairpos('\[', '', '\]', 'zncr', s:skip, l:pnblnum))
+  let l:end = s:OuterPos(l:end, searchpairpos('{', '', '}', 'zncr', s:skip, l:pnblnum))
+  if l:end != [0, 0]
+    " find the matched opening bracket on another line,
+    let l:c = s:CharAtCursor(l:end[0], l:end[1])
+    let l:start = searchpairpos(escape(tr(l:c, ')]}', '([{'), '['), '', escape(l:c, ']'), 'nbW', s:skip)
+    if l:start[0] != l:end[0]
+      " and then this line has the same indent as the line the matched bracket stays.
+      "echomsg 'Matched bracket' (l:start[0] . '-' . v:lnum) indent(l:start[0])
+      let l:indent = indent(l:start[0])
+    endif
+  endif
+
+  unlet! l:start l:end l:c
+
+  " If there is a matched closing bracket on this line,
+  " NOTE:
+  "  |[
+  " >|  (1 -
+  "  |      1) * 2
+  "  |]
+  "   ^     ^
+  if l:line =~# '^\s*[)\]}]'
+    " find the first closing bracket,
+    call cursor(v:lnum, 1)
+    let l:end = [0, 0]
+    let l:end = s:InnerPos(l:end, searchpairpos('(', '', ')', 'zncW', s:skip, v:lnum))
+    let l:end = s:InnerPos(l:end, searchpairpos('\[', '', '\]', 'zncW', s:skip, v:lnum))
+    let l:end = s:InnerPos(l:end, searchpairpos('{', '', '}', 'zncW', s:skip, v:lnum))
+    if l:end != [0, 0]
+      " find the matched opening bracket on another line,
+      let l:c = s:CharAtCursor(l:end[0], l:end[1])
+      let l:start = searchpairpos(escape(tr(l:c, ')]}', '([{'), '['), '', escape(l:c, ']'), 'nbW', s:skip)
+      if l:start[0] != l:end[0]
+        " and then this line has the same indent as the line the matched bracket stays.
+        "echomsg 'Closing Bracket' (l:start[0] . '-' . v:lnum) indent(l:start[0])
+        let l:indent = indent(l:start[0])
+      endif
+    endif
+  endif
+
+  unlet! l:start l:end l:c
+
+  " If this line starts a class definition,
+  if l:line =~# '\v^\s*%(actor|class|struct|primitive|trait|interface|type)>'
+    " reset the indent level.
+    return 0
+  endif
+
+  " If this line starts a method definition,
+  if l:line =~# '\v^\s*%(new|be|fun)>'
+    " reset the indent level.
+    return l:shiftwidth
+  endif
+
+  " If the previous line starts a class definition,
+  if l:pnbline =~# '\v^\s*%(actor|class|struct|primitive|trait|interface|type)>'
+    " reset the indent level.
+    if l:line =~# '^\s*=>'
+      return 0
+    elseif s:IsContinued(l:pnblnum)
+      return l:shiftwidth * 2
+    else
+      return l:shiftwidth
+    endif
+  endif
+
+  " If the previous line starts a method definition,
+  if l:pnbline =~# '\v^\s*%(new|be|fun)>'
+    " reset the indent level.
+    return l:shiftwidth * (l:line =~# '^\s*=>' ? 1 : 2)
+  endif
+
+  " If this line starts the definition of a method, closure or match case,
+  if l:line =~# '^\s*=>'
+    " find the start of the definition,
+    call cursor(v:lnum, 1)
+    let l:start = searchpairpos('\v<%(new|be|fun|lambda)>|\|', '', '=>\zs', 'bnW', s:skip)
+    if l:start != [0, 0]
+      " then this line has the same indent as the start.
+      "echomsg 'Method body' (l:start[0] . '-' . v:lnum) indent(l:start[0])
+      return indent(l:start[0])
+    endif
+  endif
+
+  unlet! l:start
+
+  " If this line starts a match case,
+  if l:line =~# '^\s*|'
+    " find the start or the previous case of the match block,
+    call cursor(v:lnum, 1)
+    let l:start = searchpairpos(s:cfstart, s:cfmiddle, s:cfend, 'bnW', s:skip3)
+    if l:start != [0, 0] && s:InKeyword(l:start)
+      " then this line has the same indent as the start.
+      "echomsg 'Match case' (l:start[0] . '-' . v:lnum) indent(l:start[0])
+      return indent(l:start[0])
+    endif
+  endif
+
+  unlet! l:start
+
+  " If this line ends (part of) a control flow,
+  if l:line =~# '\v^\s*%(end|elseif|else|then|in|do|until)>'
+    " find the start or middle of the control block,
+    call cursor(v:lnum, 1)
+    let l:start = searchpairpos(s:cfstart, s:cfmiddle, s:cfend, 'bnW', s:skip3)
+    if l:start != [0, 0] && s:InKeyword(l:start)
+      " then this line has the same indent as the start.
+      "echomsg 'Block end' (l:start[0] . '-' . v:lnum) indent(l:start[0])
+      return indent(l:start[0])
+    endif
+  endif
+
+  unlet! l:start
+
+  " If the previous line starts (part of) a control flow,
+  call cursor(l:pnblnum, 1)
+  let l:index = search(s:bstartp, 'zcepW', l:pnblnum)
+  if l:index > 0 && !s:InCommentOrLiteral(l:pnblnum, col('.'))
+    " find the end of the control block on the same line,
+    let l:end = searchpair(s:cfstart, '', s:cfend, 'znW', s:skip3, l:pnblnum)
+    " if the control block is not ended,
+    if l:end < 1
+      " if this line is a case for a match,
+      if l:index == 2 && l:line =~# '^\s*|'
+        " then this line has the same indent as the start of the match block.
+        return l:pnbindent
+      " if this line starts a closure body,
+      elseif l:index == 3 && l:line =~# '^\s*=>'
+        " then this line has the same indent as the start of the match block.
+        return l:pnbindent
+      else
+        " then indent this line.
+        "echomsg 'Block start' (l:pnblnum . '-' . v:lnum) (l:pnbindent + l:shiftwidth)
+        return l:pnbindent + l:shiftwidth
+      endif
+    endif
+  endif
+
+  unlet! l:end l:index
+
+  return l:indent
+endfunction
+
+function! s:PrevNonblank(lnum)
+  let l:lnum = prevnonblank(a:lnum)
+  while l:lnum > 0 && (s:InComment2(l:lnum, 1) || s:InLiteral2(l:lnum, 1))
+    let l:lnum = prevnonblank(l:lnum - 1)
+  endwhile
+  return l:lnum
+endfunction
+
+" NOTE:
+"                 v
+"  |1 /* comment */
+"  |2
+function! s:IsContinued(lnum)
+  let l:lnum = s:PrevNonblank(a:lnum)
+  if l:lnum < 1
+    return 0
+  endif
+  let l:line = getline(l:lnum)
+  let l:width = strwidth(substitute(l:line, '\s*$', '', ''))
+  " FIXME?
+  "  | 1 + //
+  "  | //
+  "  |     2
+  return !s:InCommentOrLiteral(a:lnum, l:width)
+        \ && (l:line =~# '\v<%(and|or|xor|is|isnt|as|not|consume|addressof|digestof)\s*$'
+        \ || l:line =~# '\v%([=\-]\>|[<!=>]\=|\<\<|\>\>|[+\-*/%<>,|:@])\s*$'
+        \ )
+endfunction
+
+function! s:InCommentOrLiteral(...)
+  return call('s:InComment', a:000) || call('s:InLiteral', a:000)
+endfunction
+
+function! s:InKeyword(...)
+  let [l:lnum, l:col] = (type(a:1) == type([]) ? a:1 : a:000)
+  for id in s:Or(synstack(l:lnum, l:col), [])
+    if synIDattr(id, 'name') =~# '^ponyKw'
+      return 1
+    endif
+  endfor
+  return 0
+endfunction
+
+function! s:InCaseGuard(...)
+  let [l:lnum, l:col] = (type(a:1) == type([]) ? a:1 : a:000)
+  for id in s:Or(synstack(l:lnum, l:col), [])
+    if synIDattr(id, 'name') ==# 'ponyCaseGuard'
+      return 1
+    endif
+  endfor
+  return 0
+endfunction
+
+function! s:InComment(...)
+  let [l:lnum, l:col] = (type(a:1) == type([]) ? a:1 : a:000)
+  let l:stack = synstack(l:lnum, l:col)
+  let l:i = len(l:stack)
+  while l:i > 0
+    let l:sname = synIDattr(l:stack[l:i - 1], 'name')
+    if l:sname ==# 'ponyNestedComment'
+      return 1 + l:i
+    elseif l:sname ==# 'ponyComment'
+      return 1
+    endif
+    let l:i -= 1
+  endwhile
+  return 0
+endfunction
+
+function! s:InLiteral(...)
+  let [l:lnum, l:col] = (type(a:1) == type([]) ? a:1 : a:000)
+  for id in s:Or(synstack(l:lnum, l:col), [])
+    let l:sname = synIDattr(id, 'name')
+    if l:sname ==# 'ponyDocumentString'
+      return 3
+    elseif l:sname ==# 'ponyString'
+      return 2
+    elseif l:sname ==# 'ponyCharacter'
+      return 1
+    endif
+  endfor
+  return 0
+endfunction
+
+" NOTE:
+" |// //inside
+"   ^^^^^^^^^^
+" |/* /*inside*/ */
+"   ^^^^^^^^^^^^^^
+function! s:InComment2(...)
+  let l:type = call('s:InComment', a:000)
+  if l:type < 1
+    return 0
+  endif
+  if l:type > 2
+    return l:type
+  endif
+
+  let l:c = call('s:CharAtCursor', a:000)
+  if l:c !=# '/'
+    return l:type
+  endif
+
+  call call('cursor', a:000)
+  let l:pos = getcurpos()[1:2]
+  if l:type == 1
+    "         v 
+    " |/*//*/ // //B
+    " |// //C
+    "  ^ 
+    if l:pos[1] == 1
+      return 0
+    endif
+    if l:pos != searchpos('//', 'cbW', l:pos[0])
+      return l:type
+    endif
+    if s:InComment(searchpos('//', 'bW', l:pos[0])) == l:type
+      return l:type
+    endif
+    return 0
+  else
+    "   v    v       v
+    " | /**/ /* /A/ */
+    ">|/* /B
+    " |/ */
+    "     ^
+    if l:pos == searchpairpos('/\*', '', '/\@<!\*/\zs', 'cbnW', s:skip2, l:pos[0])
+          \ || l:pos == searchpairpos('/\*', '', '/\@<!\*\zs/', 'zcnW', s:skip2, l:pos[0])
+      return 0
+    endif
+    return l:type
+  endif
+endfunction
+
+" NOTE:
+" |"inside"
+"   ^^^^^^
+" |"""inside"""""
+"   ^^^^^^^^^^^^
+function! s:InLiteral2(...)
+  let l:type = call('s:InLiteral', a:000)
+  if !l:type
+    return 0
+  endif
+
+  let l:c = call('s:CharAtCursor', a:000)
+  if l:type == 1 ? l:c !=# "'" : l:c !=# '"'
+    return l:type
+  endif
+
+  call call('cursor', a:000)
+
+  "  v
+  " |'A'
+  " |"B"
+  "  ^
+  if l:type < 3 && col('.') == 1
+    return 0
+  endif
+
+  " |'A'"B"
+  "  ^ ^^ ^
+  let l:ppos = searchpos('.', 'bnW')
+  if l:type != s:InLiteral(l:ppos)
+    return 0
+  endif
+  let l:npos = searchpos('.', 'znW')
+  if l:type != s:InLiteral(l:npos)
+    return 0
+  endif
+
+  let l:pc = s:CharAtCursor(l:ppos)
+  let l:nc = s:CharAtCursor(l:npos)
+
+  if l:type < 3
+    "     v   v
+    " |'A''B\''
+    " |"A""B\""
+    "     ^   ^
+    return l:pc !=# '\' ? 0 : l:type
+  else
+    "    v v  v
+    " |"""A""""
+    " |"""B""""
+    "  ^ ^ ^
+    if l:pc !=# '"' || l:nc !=# '"'
+      return l:type
+    endif
+    "         v
+    " |"""A""""|
+    "  ********
+    ">|""""""""|<
+    "  ********
+    " |"""B""""|
+    "  ^
+    let l:pos = getcurpos()[1:2]
+    if l:pos == searchpos('\v"@<!("""%((""")@!\_.)*"""+)@=', 'cbnW', l:pos[0])
+          \ || l:pos == searchpos('\v("""%((""")@!\_.)*"""+)@<=', 'zcW', l:pos[0])
+      return 0
+    end
+    return l:type
+  endif
+endfunction
+
+function! s:CharAtCursor(...)
+  let [l:lnum, l:col] = (type(a:1) == type([]) ? a:1 : a:000)
+  return matchstr(getline(l:lnum), '\%' . l:col . 'c.')
+endfunction
+
+function! s:Or(x, y)
+  return !empty(a:x) ? a:x : a:y
+endfunction
+
+function! s:InnerPos(x, y)
+  if a:x == [0, 0]
+    return a:y
+  elseif a:y == [0, 0]
+    return a:x
+  else
+    return a:x[1] < a:y[1] ? a:x : a:y
+  end
+endfunction
+
+function! s:OuterPos(x, y)
+  if a:x == [0, 0]
+    return a:y
+  elseif a:y == [0, 0]
+    return a:x
+  else
+    return a:x[1] > a:y[1] ? a:x : a:y
+  end
+endfunction
+
+function! pony#ClearTrailingSpace(all, alt)
+  if !&modifiable || &readonly
+    return
+  endif
+  if a:all
+    for lnum in range(1, line('$'))
+      let l:line = getline(lnum)
+      let l:end = col([lnum, '$']) - 1
+      if l:end > 0 && l:line =~# '\s$' && !s:InCommentOrLiteral(lnum, l:end)
+        if a:alt
+          call setline(lnum, substitute(l:line, '\S\@<=\s\s*$', '', ''))
+        else
+          call setline(lnum, substitute(l:line, '\s\+$', '', ''))
+        endif
+      endif
+    endfor
+  else
+    let l:lnum = line('.')
+    let l:end = col('$') - 1
+    let l:line = getline(l:lnum)
+    if l:line =~# '\s$' && !s:InCommentOrLiteral(l:lnum, l:end)
+      if a:alt
+        call setline(l:lnum, substitute(l:line, '\s\+$', '', ''))
+      else
+        call setline(l:lnum, substitute(l:line, '\S\@<=\s\s*$', '', ''))
+      endif
+    endif
+  endif
+endfunction
+
+
+let &cpo = s:cpo_save
+unlet s:cpo_save
+
+let b:did_autoload = 1
