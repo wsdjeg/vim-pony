@@ -15,8 +15,6 @@ syn case match
 
 syn sync match ponySync grouphere NONE /\v^\s*%(actor|class|struct|primitive|trait|interface|new|be|fun|let|var|embed|use)/
 
-hi def link ponyNormal          NONE
-
 syn match   ponyErrNumGroup     /__\+/ contained
 hi def link ponyErrNumGroup     Error
 
@@ -37,17 +35,30 @@ syn match   ponyFloat           /\v%(\d+_*)+[eE][-+]?%(\d+_*)+/ contains=ponyErr
 syn match   ponyFloat           /\v%(\d+_*)+\.%(\d+_*)+%([eE][-+]?%(\d+_*)+)?/ contains=ponyErrNumGroup
 hi def link ponyFloat           Float
 
-syn keyword ponyBoolean         true false
-hi def link ponyBoolean         Boolean
+syn match   ponyNormal          /\v[_a-zA-Z]\w*'?%(\_s*\.)?/
+"hi def link ponyNormal          Underlined
 
-syn match   ponyIdentifier      /\v[_a-zA-Z]\w*'?/ contained
-hi def link ponyIdentifier      Identifier
-syn match   ponyUserType        /\v[_a-zA-Z]\w*'?/ contained
-hi def link ponyUserType        NONE
-syn match   ponyUserFunction    /\v[_a-zA-Z]\w*'?/ contained
-hi def link ponyUserFunction    Function
+syn match   ponyErrUserVariable /\v<%([^_a-z]|_[^a-z])/ contained
+hi def link ponyErrUserVariable Error
+syn match   ponyUserVariable    /\v[_a-zA-Z]\w*'?/ contained contains=ponyErrUserVariable
+hi def link ponyUserVariable    Identifier
+syn match   ponyErrUserPackage  /\<[^a-z]\|'/ contained
+hi def link ponyErrUserPackage  Error
+syn match   ponyUserPackage     /\v[_a-zA-Z]\w*'?/ contained contains=ponyErrUserPackage
+hi def link ponyUserPackage     Identifier
+syn match   ponyErrUserType     /\v<%([^_A-Z]|_[^A-Z])|'/ contained
+hi def link ponyErrUserType     Error
+syn match   ponyUserType        /\v[_a-zA-Z]\w*'?/ contained contains=ponyErrUserType
+"hi def link ponyUserType        NONE
+syn match   ponyErrUserMethod   /\v<%([^_a-z]|_[^a-z])|'/ contained
+hi def link ponyErrUserMethod   Error
+syn match   ponyUserMethod      /\v[_a-zA-Z]\w*'?/ contained contains=ponyErrUserMethod
+hi def link ponyUserMethod      Function
 syn match   ponyForeignFunction /\v[_a-zA-Z]\w*'?/ contained
 hi def link ponyForeignFunction Macro
+
+syn keyword ponyBoolean         true false
+hi def link ponyBoolean         Boolean
 
 syn match   ponyKwRcapSuffix    /[!^]/
 hi def link ponyKwRcapSuffix    StorageClass
@@ -58,10 +69,8 @@ hi def link ponyOperator        Operator
 
 syn match   ponySymbol          /=>\|->\|\.\{3}\|[?#]/
 syn match   ponySymbol          /@/ nextgroup=ponyForeignFunction skipwhite skipempty
-syn match   ponySymbol          /:/ nextgroup=@ponyTypeName skipwhite skipempty
+syn match   ponySymbol          /:/ nextgroup=@ponyKeyword,ponyUserType skipwhite skipempty
 hi def link ponySymbol          Special
-
-syn cluster ponyTypeName        contains=ponyKwClass,ponyKwCapability,ponyKwAtom,ponyBuiltinType,ponyUserType
 
 syn keyword ponyBuiltinTrait    Integer Real FloatingPoint FormatSpec PrefixSpec
 hi def link ponyBuiltinTrait    SpecialComment
@@ -96,13 +105,13 @@ hi def link ponyCaseGuard       Keyword
 syn keyword ponyKwAtom          this object lambda __loc
 hi def link ponyKwAtom          Keyword
 
-syn keyword ponyKwField         let var embed nextgroup=ponyIdentifier skipwhite skipempty
+syn keyword ponyKwField         let var embed nextgroup=@ponyKeyword,ponyUserVariable skipwhite skipempty
 hi def link ponyKwField         Keyword
 
-syn keyword ponyKwFunction      new be fun nextgroup=ponyUserFunction skipwhite skipempty
+syn keyword ponyKwFunction      new be fun nextgroup=@ponyKeyword,ponyUserMethod skipwhite skipempty
 hi def link ponyKwFunction      Keyword
 
-syn keyword ponyKwUse           use nextgroup=ponyString,ponyIdentifier skipwhite skipempty
+syn keyword ponyKwUse           use nextgroup=ponyString,@ponyKeyword,ponyUserPackage skipwhite skipempty
 hi def link ponyKwUse           Include
 
 syn keyword ponyKwTypedef       type
@@ -112,8 +121,10 @@ syn match   ponyKwCapability    /\v#%(read|send|share|alias|any)/ nextgroup=pony
 syn keyword ponyKwCapability    ref val tag iso box trn nextgroup=ponyKwRcapSuffix skipwhite skipempty
 hi def link ponyKwCapability    StorageClass
 
-syn keyword ponyKwClass         actor class struct primitive trait interface nextgroup=ponyIdentifier skipwhite skipempty
+syn keyword ponyKwClass         actor class struct primitive trait interface nextgroup=@ponyKeyword,ponyUserType skipwhite skipempty
 hi def link ponyKwClass         Structure
+
+syn cluster ponyKeyword         contains=ponyKwClass,ponyKwCapability,ponyKwTypedef,ponyKwUse,ponyKwFunction,ponyKwField,ponyKwAtom,ponyKwControl,ponyBuiltinType,ponyBuiltinTrait,ponyOperator,ponyBoolean
 
 syn match   ponyErrEscape       /\\\_.\?\_s*/ contained
 hi def link ponyErrEscape       Error
