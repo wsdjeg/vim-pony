@@ -17,7 +17,7 @@ setlocal formatoptions-=t formatoptions+=croqlj
 
 setlocal path=
 setlocal includeexpr=
-setlocal include=\\v^\\s*use\\_s+%(\\i+\\_s*=\\_s*)?"\\zs[^"]*\\ze"
+setlocal include=\\v^\\s*use\\_s+%(\\i+\\_s*\\=\\_s*)?"\\zs[^"]*\\ze"
 setlocal define=\\v^\\s*%(actor\|class\|struct\|primitive\|trait\|interface\|type\|new\|be\|fun\|let\|var\|embed\|use\|for\\_s+%(\\i+\\_s*,\\_s*)*\|with\\_s+%(\\i+\\_s*,\\_s*)*)\|(<\\i+\\_s*:\\_s*\\i+)@=
 setlocal isident=@,48-57,_,39
 setlocal iskeyword=@,48-57,_,39
