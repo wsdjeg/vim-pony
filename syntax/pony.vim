@@ -159,4 +159,4 @@ hi def link ponyNestedComment   Comment
 let &cpo = s:cpo_save
 unlet s:cpo_save
 
-let b:current_syntax = 'fish'
+let b:current_syntax = 'pony'
