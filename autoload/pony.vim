@@ -574,7 +574,7 @@ function! pony#ClearTrailingSpace(all, alt)
     for lnum in range(1, line('$'))
       let l:line = getline(lnum)
       let l:end = col([lnum, '$']) - 1
-      if l:end > 0 && l:line =~# '\s$' && !s:InCommentOrLiteral(lnum, l:end)
+      if l:end > 0 && l:line =~# '\s$' && !s:InLiteral(lnum, l:end)
         if a:alt
           call setline(lnum, substitute(l:line, '\S\@<=\s\s*$', '', ''))
         else
@@ -586,7 +586,7 @@ function! pony#ClearTrailingSpace(all, alt)
     let l:lnum = line('.')
     let l:end = col('$') - 1
     let l:line = getline(l:lnum)
-    if l:line =~# '\s$' && !s:InCommentOrLiteral(l:lnum, l:end)
+    if l:line =~# '\s$' && !s:InLiteral(l:lnum, l:end)
       if a:alt
         call setline(l:lnum, substitute(l:line, '\s\+$', '', ''))
       else
