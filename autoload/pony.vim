@@ -12,9 +12,10 @@ let s:cpo_save = &cpo
 set cpo&vim
 
 
-let s:skip = '<SID>InCommentOrLiteral(line("."), col("."))'
+"let s:skip = '<SID>InCommentOrLiteral(line("."), col("."))'
 let s:skip2 = '<SID>InLiteral(line("."), col(".")) || <SID>InComment(line("."), col(".")) == 1'
 let s:skip3 = '!<SID>InKeyword(line("."), col("."))'
+let s:skip4 = '!<SID>InBracket(line("."), col("."))'
 let s:cfstart = '\v<%(ifdef|if|match|while|for|repeat|try|with|recover|object|lambda)>'
 let s:cfmiddle = '\v<%(then|elseif|else|until|do|in)>|\|'
 let s:cfend = '\v<end>'
@@ -126,7 +127,6 @@ function! pony#Indent()
 
   unlet! l:ppnblnum
 
-  " TODO: optimization
   " If the previous line contains an unmatched opening bracket
   if !l:continued && l:pnbline =~# '[{\[(]'
     " if the line ends with an opening bracket,
@@ -142,9 +142,9 @@ function! pony#Indent()
       let l:end = col([l:pnblnum, '$']) - 1
       call cursor(l:pnblnum, l:end)
       while l:end > 0
-        let l:start = s:OuterPos(l:start, searchpairpos('(', '', ')', 'bnW', s:skip, l:pnblnum))
-        let l:start = s:OuterPos(l:start, searchpairpos('\[', '', '\]', 'bnW', s:skip, l:pnblnum))
-        let l:start = s:OuterPos(l:start, searchpairpos('{', '', '}', 'bnW', s:skip, l:pnblnum))
+        let l:start = s:OuterPos(l:start, searchpairpos('(', '', ')', 'bnW', s:skip4, l:pnblnum))
+        let l:start = s:OuterPos(l:start, searchpairpos('\[', '', '\]', 'bnW', s:skip4, l:pnblnum))
+        let l:start = s:OuterPos(l:start, searchpairpos('{', '', '}', 'bnW', s:skip4, l:pnblnum))
         if l:start == [0, 0]
           break
         endif
@@ -152,7 +152,7 @@ function! pony#Indent()
         call cursor(l:start[0], l:start[1])
         let l:c = s:CharAtCursor(l:start[0], l:start[1])
         if searchpair(escape(l:c, '['), '', escape(tr(l:c, '([{', ')]}'), ']'),
-              \ 'znW', s:skip, l:pnblnum) < 1
+              \ 'znW', s:skip4, l:pnblnum) < 1
           " the unmatched opening bracket is found,
           break
         endif
@@ -179,13 +179,13 @@ function! pony#Indent()
   call cursor(l:pnblnum, 1)
   " find the last closing bracket,
   let l:end = [0, 0]
-  let l:end = s:OuterPos(l:end, searchpairpos('(', '', ')', 'zncr', s:skip, l:pnblnum))
-  let l:end = s:OuterPos(l:end, searchpairpos('\[', '', '\]', 'zncr', s:skip, l:pnblnum))
-  let l:end = s:OuterPos(l:end, searchpairpos('{', '', '}', 'zncr', s:skip, l:pnblnum))
+  let l:end = s:OuterPos(l:end, searchpairpos('(', '', ')', 'zncr', s:skip4, l:pnblnum))
+  let l:end = s:OuterPos(l:end, searchpairpos('\[', '', '\]', 'zncr', s:skip4, l:pnblnum))
+  let l:end = s:OuterPos(l:end, searchpairpos('{', '', '}', 'zncr', s:skip4, l:pnblnum))
   if l:end != [0, 0]
     " find the matched opening bracket on another line,
     let l:c = s:CharAtCursor(l:end[0], l:end[1])
-    let l:start = searchpairpos(escape(tr(l:c, ')]}', '([{'), '['), '', escape(l:c, ']'), 'nbW', s:skip)
+    let l:start = searchpairpos(escape(tr(l:c, ')]}', '([{'), '['), '', escape(l:c, ']'), 'nbW', s:skip4)
     if l:start[0] != l:end[0]
       " and then this line has the same indent as the line the matched bracket stays.
       "echomsg 'Matched bracket' (l:start[0] . '-' . v:lnum) indent(l:start[0])
@@ -206,13 +206,13 @@ function! pony#Indent()
     " find the first closing bracket,
     call cursor(v:lnum, 1)
     let l:end = [0, 0]
-    let l:end = s:InnerPos(l:end, searchpairpos('(', '', ')', 'zncW', s:skip, v:lnum))
-    let l:end = s:InnerPos(l:end, searchpairpos('\[', '', '\]', 'zncW', s:skip, v:lnum))
-    let l:end = s:InnerPos(l:end, searchpairpos('{', '', '}', 'zncW', s:skip, v:lnum))
+    let l:end = s:InnerPos(l:end, searchpairpos('(', '', ')', 'zncW', s:skip4, v:lnum))
+    let l:end = s:InnerPos(l:end, searchpairpos('\[', '', '\]', 'zncW', s:skip4, v:lnum))
+    let l:end = s:InnerPos(l:end, searchpairpos('{', '', '}', 'zncW', s:skip4, v:lnum))
     if l:end != [0, 0]
       " find the matched opening bracket on another line,
       let l:c = s:CharAtCursor(l:end[0], l:end[1])
-      let l:start = searchpairpos(escape(tr(l:c, ')]}', '([{'), '['), '', escape(l:c, ']'), 'nbW', s:skip)
+      let l:start = searchpairpos(escape(tr(l:c, ')]}', '([{'), '['), '', escape(l:c, ']'), 'nbW', s:skip4)
       if l:start[0] != l:end[0]
         " and then this line has the same indent as the line the matched bracket stays.
         "echomsg 'Closing Bracket' (l:start[0] . '-' . v:lnum) indent(l:start[0])
@@ -257,7 +257,7 @@ function! pony#Indent()
   if l:line =~# '^\s*=>'
     " find the start of the definition,
     call cursor(v:lnum, 1)
-    let l:start = searchpairpos('\v<%(new|be|fun|lambda)>|\|', '', '=>\zs', 'bnW', s:skip)
+    let l:start = searchpairpos('\v<%(new|be|fun|lambda)>|\|', '', '=>\zs', 'bnW', s:skip3)
     if l:start != [0, 0]
       " then this line has the same indent as the start.
       "echomsg 'Method body' (l:start[0] . '-' . v:lnum) indent(l:start[0])
@@ -370,6 +370,16 @@ function! s:InKeyword(...)
   let [l:lnum, l:col] = (type(a:1) == type([]) ? a:1 : a:000)
   for id in s:Or(synstack(l:lnum, l:col), [])
     if synIDattr(id, 'name') =~# '^ponyKw'
+      return 1
+    endif
+  endfor
+  return 0
+endfunction
+
+function! s:InBracket(...)
+  let [l:lnum, l:col] = (type(a:1) == type([]) ? a:1 : a:000)
+  for id in s:Or(synstack(l:lnum, l:col), [])
+    if synIDattr(id, 'name') ==# 'ponyBracket'
       return 1
     endif
   endfor

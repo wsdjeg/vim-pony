@@ -63,6 +63,9 @@ hi def link ponyForeignFunction Macro
 syn keyword ponyBoolean         true false
 hi def link ponyBoolean         Boolean
 
+syn match   ponyBracket         /[{\[()\]}]/
+"hi def link ponyBracket         Special
+
 syn match   ponyKwRcapSuffix    /[!^]/
 hi def link ponyKwRcapSuffix    StorageClass
 
