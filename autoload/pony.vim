@@ -14,12 +14,11 @@ set cpo&vim
 
 let s:skip = '<SID>InCommentOrLiteral(line("."), col("."))'
 let s:skip2 = '<SID>InLiteral(line("."), col(".")) || <SID>InComment(line("."), col(".")) == 1'
-let s:skip3 = '<SID>InCommentOrLiteral(line("."), col(".")) || <SID>InCaseGuard(line("."), col("."))'
+let s:skip3 = '!<SID>InKeyword(line("."), col("."))'
 let s:cfstart = '\v<%(ifdef|if|match|while|for|repeat|try|with|recover|object|lambda)>'
 let s:cfmiddle = '\v<%(then|elseif|else|until|do|in)>|\|'
-let s:cfend = '\v<end>\zs'
-" TODO: optimization
-let s:bstartp = '\v^%(''%(\\''|[^''])*''|[^'']){-}<%(ifdef|if|then|elseif|else|(match)|while|for|in|do|try|with|recover|repeat|until|object|(lambda))>'
+let s:cfend = '\v<end>'
+let s:bstartp = '\v<%(ifdef|if|then|elseif|else|(match)|while|for|in|do|try|with|recover|repeat|until|object|(lambda))>'
 
 function! pony#Indent()
   if v:lnum <= 1
@@ -273,7 +272,7 @@ function! pony#Indent()
     " find the start or the previous case of the match block,
     call cursor(v:lnum, 1)
     let l:start = searchpairpos(s:cfstart, s:cfmiddle, s:cfend, 'bnW', s:skip3)
-    if l:start != [0, 0] && s:InKeyword(l:start)
+    if l:start != [0, 0]
       " then this line has the same indent as the start.
       "echomsg 'Match case' (l:start[0] . '-' . v:lnum) indent(l:start[0])
       return indent(l:start[0])
@@ -287,7 +286,7 @@ function! pony#Indent()
     " find the start or middle of the control block,
     call cursor(v:lnum, 1)
     let l:start = searchpairpos(s:cfstart, s:cfmiddle, s:cfend, 'bnW', s:skip3)
-    if l:start != [0, 0] && s:InKeyword(l:start)
+    if l:start != [0, 0]
       " then this line has the same indent as the start.
       "echomsg 'Block end' (l:start[0] . '-' . v:lnum) indent(l:start[0])
       return indent(l:start[0])
@@ -298,8 +297,17 @@ function! pony#Indent()
 
   " If the previous line starts (part of) a control flow,
   call cursor(l:pnblnum, 1)
-  let l:index = search(s:bstartp, 'zcepW', l:pnblnum)
-  if l:index > 0 && !s:InCommentOrLiteral(l:pnblnum, col('.'))
+  while 1
+    " find the start of the control block,
+    let l:start = searchpos(s:bstartp, 'zcepW', l:pnblnum)
+    if l:start[2] == 0
+      break
+    endif
+    if !s:InKeyword(l:start[0:1])
+      call cursor(l:pnblnum, l:start[1] + 3)
+      continue
+    endif
+    let l:index = l:start[2]
     " find the end of the control block on the same line,
     let l:end = searchpair(s:cfstart, '', s:cfend, 'znW', s:skip3, l:pnblnum)
     " if the control block is not ended,
@@ -318,9 +326,9 @@ function! pony#Indent()
         return l:pnbindent + l:shiftwidth
       endif
     endif
-  endif
+  endwhile
 
-  unlet! l:end l:index
+  unlet! l:start l:end l:index
 
   return l:indent
 endfunction
@@ -362,16 +370,6 @@ function! s:InKeyword(...)
   let [l:lnum, l:col] = (type(a:1) == type([]) ? a:1 : a:000)
   for id in s:Or(synstack(l:lnum, l:col), [])
     if synIDattr(id, 'name') =~# '^ponyKw'
-      return 1
-    endif
-  endfor
-  return 0
-endfunction
-
-function! s:InCaseGuard(...)
-  let [l:lnum, l:col] = (type(a:1) == type([]) ? a:1 : a:000)
-  for id in s:Or(synstack(l:lnum, l:col), [])
-    if synIDattr(id, 'name') ==# 'ponyCaseGuard'
       return 1
     endif
   endfor
