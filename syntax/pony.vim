@@ -35,7 +35,10 @@ syn match   ponyFloat           /\v%(\d+_*)+[eE][-+]?%(\d+_*)+/ contains=ponyErr
 syn match   ponyFloat           /\v%(\d+_*)+\.%(\d+_*)+%([eE][-+]?%(\d+_*)+)?/ contains=ponyErrNumGroup
 hi def link ponyFloat           Float
 
-syn match   ponyNormal          /\v[_a-zA-Z]\w*'?%(\_s*\.)?/
+syn match   ponyPrime           /'/
+"hi def link ponyPrime           Underlined
+
+syn match   ponyNormal          /\v[_a-zA-Z]\w*/ nextgroup=ponyPrime
 "hi def link ponyNormal          Underlined
 
 syn match   ponyErrUserVariable /\v<%([^_a-z]|_[^a-z])/ contained
@@ -64,8 +67,9 @@ syn match   ponyKwRcapSuffix    /[!^]/
 hi def link ponyKwRcapSuffix    StorageClass
 
 syn match   ponyOperator        /==\|!=\|<<\|>>\|<=\|>=\|[+\-*/%<>]/
-syn keyword ponyOperator        and or xor is isnt as not consume addressof digestof
 hi def link ponyOperator        Operator
+syn keyword ponyKwOperator      and or xor is isnt as not consume addressof digestof
+hi def link ponyKwOperator      Operator
 
 syn match   ponySymbol          /=>\|->\|\.\{3}\|[?#]/
 syn match   ponySymbol          /@/ nextgroup=ponyForeignFunction skipwhite skipempty
@@ -124,7 +128,7 @@ hi def link ponyKwCapability    StorageClass
 syn keyword ponyKwClass         actor class struct primitive trait interface nextgroup=@ponyKeyword,ponyUserType skipwhite skipempty
 hi def link ponyKwClass         Structure
 
-syn cluster ponyKeyword         contains=ponyKwClass,ponyKwCapability,ponyKwTypedef,ponyKwUse,ponyKwFunction,ponyKwField,ponyKwAtom,ponyKwControl,ponyBuiltinType,ponyBuiltinTrait,ponyOperator,ponyBoolean
+syn cluster ponyKeyword         contains=ponyKwClass,ponyKwCapability,ponyKwTypedef,ponyKwUse,ponyKwFunction,ponyKwField,ponyKwAtom,ponyKwControl,ponyKwOperator,ponyBoolean,ponyBuiltinType,ponyBuiltinTrait
 
 syn match   ponyErrEscape       /\\\_.\?\_s*/ contained
 hi def link ponyErrEscape       Error
