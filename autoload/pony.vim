@@ -1,7 +1,7 @@
 " Vim plugin file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2016 May 25
+" Last Change:  2016 May 26
 
 if exists('b:did_autoload')
   finish
@@ -19,7 +19,7 @@ let s:skip4 = '!<SID>InBracket(line("."), col("."))'
 let s:cfstart = '\v<%(ifdef|if|match|while|for|repeat|try|with|recover|object|lambda)>'
 let s:cfmiddle = '\v<%(then|elseif|else|until|do|in)>|\|'
 let s:cfend = '\v<end>'
-let s:bstartp = '\v<%(ifdef|if|then|elseif|else|(match)|while|for|in|do|try|with|recover|repeat|until|object|(lambda))>'
+let s:bstartp = '\v<%(ifdef|if|then|elseif|else|(match)|while|for|in|do|try|with|recover|repeat|until|object|%(lambda))>'
 
 function! pony#Indent()
   if v:lnum <= 1
@@ -62,33 +62,28 @@ function! pony#Indent()
   let l:indent = l:pnbindent
   let l:shiftwidth = shiftwidth()
 
-  let l:continued = 0
+  " FIXME?
+  let l:continuing = 0
   let l:ppnblnum = s:PrevNonblank(l:pnblnum - 1)
   " If the previous line is also continuing another line,
   if s:IsContinued(l:ppnblnum) && !s:IsContinued(l:pnblnum)
     "echomsg 'Continued2' l:ppnblnum indent(l:ppnblnum)
     " if the previous line is part of the definition of a class,
-    if getline(l:ppnblnum) =~# '\v^\s*%(actor|class|struct|primitive|trait|interface|type)>'
+    if getline(l:ppnblnum) =~# '\v^\s*%(actor|class|struct|primitive|trait|interface)>'
       " reset the indent level.
-      "echomsg 'Continuing9' (l:ppnblnum . '-' . v:lnum) l:shiftwidth
-      let l:continued = 1
+      "echomsg 'Continuing8' (l:ppnblnum . '-' . v:lnum) l:shiftwidth
+      let l:continuing = 1
       let l:indent = l:shiftwidth
     " if the previous line is part of the definition of a method,
     elseif getline(l:ppnblnum) =~# '\v^\s*%(fun|new|be)>'
       " reset the indent level.
-      "echomsg 'Continuing8' (l:ppnblnum . '-' . v:lnum) (l:shiftwidth * 2)
-      let l:continued = 1
+      "echomsg 'Continuing7' (l:ppnblnum . '-' . v:lnum) (l:shiftwidth * 2)
+      let l:continuing = 1
       let l:indent = l:shiftwidth * 2
-    " if the previous line is the start of a definition body,
-    elseif l:pnbline =~# '=>\s*$'
-      " indent this line based on the level of the previous previous line.
-      "echomsg 'Continuing7' (l:ppnblnum . '-' . v:lnum) (indent(l:ppnblnum) + l:shiftwidth)
-      let l:continued = 1
-      let l:indent = indent(l:ppnblnum) + l:shiftwidth
     else
       " keep using the previous indent.
       "echomsg 'Continuing6' (l:pnblnum . '-' . v:lnum) l:pnbindent
-      let l:continued = 1
+      let l:continuing = 1
       let l:indent = l:pnbindent
     endif
   " If the previous line ends with a unary or binary operator,
@@ -97,30 +92,30 @@ function! pony#Indent()
     if s:IsContinued(l:ppnblnum)
       " keep using the previous indent.
       "echomsg 'Continuing5' (l:pnblnum . '-' . v:lnum) l:pnbindent
-      let l:continued = 1
+      let l:continuing = 1
       let l:indent = l:pnbindent
     " if the previous line is part of the definition of a class,
-    elseif l:pnbline =~# '\v^\s*%(actor|class|struct|primitive|trait|interface|type)>'
+    elseif l:pnbline =~# '\v^\s*%(actor|class|struct|primitive|trait|interface)>'
       " reset the indent level.
       "echomsg 'Continuing4' (l:pnblnum . '-' . v:lnum) (l:shiftwidth * 2)
-      let l:continued = 1
+      let l:continuing = 1
       let l:indent = l:shiftwidth * 2
     " if the previous line is part of the definition of a method,
     elseif l:pnbline =~# '\v^\s*%(fun|new|be)>'
       " reset the indent level.
       "echomsg 'Continuing3' (l:pnblnum . '-' . v:lnum) (l:shiftwidth * 2)
-      let l:continued = 1
+      let l:continuing = 1
       let l:indent = l:shiftwidth * 2
     " if the previous line is the start of a definition body,
     elseif l:pnbline =~# '=>\s*$'
       " indent this line.
       "echomsg 'Continuing2' (l:pnblnum . '-' . v:lnum) (l:pnbindent + l:shiftwidth)
-      let l:continued = 1
+      let l:continuing = 1
       let l:indent = l:pnbindent + l:shiftwidth
     else
       " indent this line twice as far.
       "echomsg 'Continuing1' (l:pnblnum . '-' . v:lnum) (l:pnbindent + l:shiftwidth * 2)
-      let l:continued = 1
+      let l:continuing = 1
       let l:indent = l:pnbindent + l:shiftwidth * 2
     endif
   endif
@@ -128,7 +123,7 @@ function! pony#Indent()
   unlet! l:ppnblnum
 
   " If the previous line contains an unmatched opening bracket
-  if !l:continued && l:pnbline =~# '[{\[(]'
+  if !l:continuing && l:pnbline =~# '[{\[(]'
     " if the line ends with an opening bracket,
     if l:pnbline =~# '[{\[(]\s*$' && !s:InCommentOrLiteral(l:pnblnum, col([l:pnblnum, '$']) - 1)
       " indent this line.
@@ -165,9 +160,9 @@ function! pony#Indent()
         let l:indent += l:shiftwidth
       endif
     endif
-  endif
 
-  unlet! l:start l:end l:c
+    unlet! l:start l:end l:c
+  endif
 
   " If there is a matched closing bracket on the previous line,
   " NOTE:
@@ -176,24 +171,26 @@ function! pony#Indent()
   "  |      1) * 2]
   "  |  command
   "   ^
-  call cursor(l:pnblnum, 1)
-  " find the last closing bracket,
-  let l:end = [0, 0]
-  let l:end = s:OuterPos(l:end, searchpairpos('(', '', ')', 'zncr', s:skip4, l:pnblnum))
-  let l:end = s:OuterPos(l:end, searchpairpos('\[', '', '\]', 'zncr', s:skip4, l:pnblnum))
-  let l:end = s:OuterPos(l:end, searchpairpos('{', '', '}', 'zncr', s:skip4, l:pnblnum))
-  if l:end != [0, 0]
-    " find the matched opening bracket on another line,
-    let l:c = s:CharAtCursor(l:end[0], l:end[1])
-    let l:start = searchpairpos(escape(tr(l:c, ')]}', '([{'), '['), '', escape(l:c, ']'), 'nbW', s:skip4)
-    if l:start[0] != l:end[0]
-      " and then this line has the same indent as the line the matched bracket stays.
-      "echomsg 'Matched bracket' (l:start[0] . '-' . v:lnum) indent(l:start[0])
-      let l:indent = indent(l:start[0])
+  if !l:continuing
+    call cursor(l:pnblnum, 1)
+    " find the last closing bracket,
+    let l:end = [0, 0]
+    let l:end = s:OuterPos(l:end, searchpairpos('(', '', ')', 'zncr', s:skip4, l:pnblnum))
+    let l:end = s:OuterPos(l:end, searchpairpos('\[', '', '\]', 'zncr', s:skip4, l:pnblnum))
+    let l:end = s:OuterPos(l:end, searchpairpos('{', '', '}', 'zncr', s:skip4, l:pnblnum))
+    if l:end != [0, 0]
+      " find the matched opening bracket on another line,
+      let l:c = s:CharAtCursor(l:end[0], l:end[1])
+      let l:start = searchpairpos(escape(tr(l:c, ')]}', '([{'), '['), '', escape(l:c, ']'), 'nbW', s:skip4)
+      if l:start[0] != l:end[0]
+        " and then this line has the same indent as the line the matched bracket stays.
+        "echomsg 'Matched bracket' (l:start[0] . '-' . v:lnum) indent(l:start[0])
+        let l:indent = indent(l:start[0])
+      endif
     endif
-  endif
 
-  unlet! l:start l:end l:c
+    unlet! l:start l:end l:c
+  endif
 
   " If there is a matched closing bracket on this line,
   " NOTE:
@@ -219,38 +216,8 @@ function! pony#Indent()
         let l:indent = indent(l:start[0])
       endif
     endif
-  endif
 
-  unlet! l:start l:end l:c
-
-  " If this line starts a class definition,
-  if l:line =~# '\v^\s*%(actor|class|struct|primitive|trait|interface|type)>'
-    " reset the indent level.
-    return 0
-  endif
-
-  " If this line starts a method definition,
-  if l:line =~# '\v^\s*%(new|be|fun)>'
-    " reset the indent level.
-    return l:shiftwidth
-  endif
-
-  " If the previous line starts a class definition,
-  if l:pnbline =~# '\v^\s*%(actor|class|struct|primitive|trait|interface|type)>'
-    " reset the indent level.
-    if l:line =~# '^\s*=>'
-      return 0
-    elseif s:IsContinued(l:pnblnum)
-      return l:shiftwidth * 2
-    else
-      return l:shiftwidth
-    endif
-  endif
-
-  " If the previous line starts a method definition,
-  if l:pnbline =~# '\v^\s*%(new|be|fun)>'
-    " reset the indent level.
-    return l:shiftwidth * (l:line =~# '^\s*=>' ? 1 : 2)
+    unlet! l:start l:end l:c
   endif
 
   " If this line starts the definition of a method, closure or match case,
@@ -263,9 +230,37 @@ function! pony#Indent()
       "echomsg 'Method body' (l:start[0] . '-' . v:lnum) indent(l:start[0])
       return indent(l:start[0])
     endif
+
+    unlet! l:start
   endif
 
-  unlet! l:start
+  " If this line starts a class definition or starts an alias,
+  if l:line =~# '\v^\s*%(actor|class|struct|primitive|trait|interface|use|type)>'
+    " reset the indent level.
+    return 0
+  endif
+
+  " If this line starts a method definition,
+  if l:line =~# '\v^\s*%(new|be|fun)>'
+    " reset the indent level.
+    return l:shiftwidth
+  endif
+
+  " If the previous line starts a class definition,
+  if l:pnbline =~# '\v^\s*%(actor|class|struct|primitive|trait|interface)>'
+    " reset the indent level.
+    if s:IsContinued(l:pnblnum)
+      return l:shiftwidth * 2
+    else
+      return l:shiftwidth
+    endif
+  endif
+
+  " If the previous line starts a method definition,
+  if l:pnbline =~# '\v^\s*%(new|be|fun)>'
+    " reset the indent level.
+    return l:shiftwidth * 2
+  endif
 
   " If this line starts a match case,
   call cursor(v:lnum, 1)
@@ -277,9 +272,9 @@ function! pony#Indent()
       "echomsg 'Match case' (l:start[0] . '-' . v:lnum) indent(l:start[0])
       return indent(l:start[0])
     endif
-  endif
 
-  unlet! l:start
+    unlet! l:start
+  endif
 
   " If this line ends (part of) a control flow,
   if l:line =~# '\v^\s*%(end|elseif|else|then|in|do|until)>'
@@ -291,9 +286,9 @@ function! pony#Indent()
       "echomsg 'Block end' (l:start[0] . '-' . v:lnum) indent(l:start[0])
       return indent(l:start[0])
     endif
-  endif
 
-  unlet! l:start
+    unlet! l:start
+  endif
 
   " If the previous line starts (part of) a control flow,
   call cursor(l:pnblnum, 1)
@@ -314,10 +309,6 @@ function! pony#Indent()
     if l:end < 1
       " if this line is a case for a match,
       if l:index == 2 && l:line =~# '^\s*|'
-        " then this line has the same indent as the start of the match block.
-        return l:pnbindent
-      " if this line starts a closure body,
-      elseif l:index == 3 && l:line =~# '^\s*=>'
         " then this line has the same indent as the start of the match block.
         return l:pnbindent
       else

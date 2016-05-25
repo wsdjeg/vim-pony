@@ -1,8 +1,12 @@
        // vim:debug=msg
         type A is (I32 | U32)
-
-use "collections"
-use time = "time"
+type B is (
+     Good & Bad
+        ) |
+ Nothing |
+  Fine
+  use "collections"
+    use time = "time"
 
 actor Main
 //
