@@ -1,7 +1,7 @@
 " Vim syntax file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2016 May 25
+" Last Change:  2016 May 26
 
 if exists('b:current_syntax')
   finish
@@ -18,15 +18,18 @@ syn sync match ponySync grouphere NONE /\v^\s*%(actor|class|struct|primitive|tra
 syn match   ponyErrNumGroup     /__\+/ contained
 hi def link ponyErrNumGroup     Error
 
-syn match   ponyErrInteger      /\v(%(\d+_*)+)@<=\./
+syn match   ponyErrIntDec       /\v(%(\d+_*)+)@<=\./
+syn match   ponyPrime           /'/ contained nextgroup=ponyPeriod
+syn match   ponyPeriod          /\./ contained
+
 syn match   ponyInteger         /\v%(\d+_*)+/ contains=ponyErrNumGroup
-syn match   ponyErrInteger      /\v(0[xX])@<=[_.g-zG-Z]/
+syn match   ponyErrIntDec       /\v(0[xX])@<=[_.g-zG-Z]/
 syn match   ponyErrIntHex       /[.g-zG-Z]/ contained
 syn match   ponyInteger         /\v0[xX]%(\x+_*)+/ contains=ponyErrNumGroup nextgroup=ponyErrIntHex
-syn match   ponyErrInteger      /\v(0[bB])@<=[_2-9a-zA-Z]/
+syn match   ponyErrIntDec       /\v(0[bB])@<=[_2-9a-zA-Z]/
 syn match   ponyErrIntBin       /[2-9.a-zA-Z]/ contained
 syn match   ponyInteger         /\v0[bB]%([01]+_*)+/ contains=ponyErrNumGroup nextgroup=ponyErrIntBin
-hi def link ponyErrInteger      Error
+hi def link ponyErrIntDec       Error
 hi def link ponyErrIntHex       Error
 hi def link ponyErrIntBin       Error
 hi def link ponyInteger         Number
@@ -35,11 +38,10 @@ syn match   ponyFloat           /\v%(\d+_*)+[eE][-+]?%(\d+_*)+/ contains=ponyErr
 syn match   ponyFloat           /\v%(\d+_*)+\.%(\d+_*)+%([eE][-+]?%(\d+_*)+)?/ contains=ponyErrNumGroup
 hi def link ponyFloat           Float
 
-syn match   ponyPrime           /'/
-"hi def link ponyPrime           Underlined
+" for ponyErrIntDec
+syn match   ponyNormal          /\v_?[_a-z]\w*/ nextgroup=ponyPrime,ponyPeriod
 
-syn match   ponyNormal          /\v[_a-zA-Z]\w*/ nextgroup=ponyPrime
-"hi def link ponyNormal          Underlined
+syn match   ponyNormalType      /\v_?[A-Z]\w*/ nextgroup=ponyTypeOperator,ponyKwOperatorT,@ponyBracketT skipwhite skipempty
 
 syn match   ponyErrUserVariable /\v<%([^_a-z]|_[^a-z])/ contained
 hi def link ponyErrUserVariable Error
@@ -51,50 +53,62 @@ syn match   ponyUserPackage     /\v[_a-zA-Z]\w*'?/ contained contains=ponyErrUse
 hi def link ponyUserPackage     Identifier
 syn match   ponyErrUserType     /\v<%([^_A-Z]|_[^A-Z])|'/ contained
 hi def link ponyErrUserType     Error
-syn match   ponyUserType        /\v[_a-zA-Z]\w*'?/ contained contains=ponyErrUserType
-"hi def link ponyUserType        NONE
+syn match   ponyUserType        /\v[_a-zA-Z]\w*'?/ contained contains=ponyErrUserType nextgroup=ponyTypeOperator,ponyKwOperatorT,@ponyBracketT skipwhite skipempty
 syn match   ponyErrUserMethod   /\v<%([^_a-z]|_[^a-z])|'/ contained
 hi def link ponyErrUserMethod   Error
 syn match   ponyUserMethod      /\v[_a-zA-Z]\w*'?/ contained contains=ponyErrUserMethod
 hi def link ponyUserMethod      Function
-syn match   ponyForeignFunction /\v[_a-zA-Z]\w*'?/ contained
+syn match   ponyForeignFunction /\v[_a-zA-Z]\w*'?/ contained nextgroup=ponyBracketTL skipwhite skipempty
 hi def link ponyForeignFunction Macro
 
 syn keyword ponyBoolean         true false
 hi def link ponyBoolean         Boolean
 
+syn match   ponyBracketTL       /[\[(]/ contained nextgroup=@ponyKeyword,@ponyType
+syn match   ponyBracketTR       /[)\]]/ contained nextgroup=ponyTypeOperator,ponyKwOperatorT
 syn match   ponyBracket         /[{\[()\]}]/
-"hi def link ponyBracket         Special
 
-syn match   ponyKwRcapSuffix    /[!^]/
+syn cluster ponyBracketT        contains=ponyBracketTL,ponyBracketTR
+
+syn match   ponyKwRcapSuffix    /[!^]/ nextgroup=ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
 hi def link ponyKwRcapSuffix    StorageClass
 
-syn match   ponyOperator        /==\|!=\|<<\|>>\|<=\|>=\|[+\-*/%<>]/
-hi def link ponyOperator        Operator
-syn keyword ponyKwOperator      and or xor is isnt as not consume addressof digestof
+syn match   ponyTypeOperator    /[|&,]/ contained nextgroup=ponyBracketTL,@ponyKeyword,@ponyType
+hi def link ponyTypeOperator    Operator
+syn match   ponyNumberOperator  /==\|!=\|<<\|>>\|<=\|>=\|[+\-*/%<>]/
+hi def link ponyNumberOperator  Operator
+syn keyword ponyKwOperatorT     is contained nextgroup=ponyBracketTL,@ponyKeyword,@ponyType skipwhite skipempty
+hi def link ponyKwOperatorT     Operator
+syn keyword ponyKwOperator      as nextgroup=ponyBracketTL,@ponyKeyword,@ponyType skipwhite skipempty
+syn keyword ponyKwOperator      and or xor not is isnt consume addressof digestof
 hi def link ponyKwOperator      Operator
 
 syn match   ponySymbol          /=>\|->\|\.\{3}\|[?#]/
 syn match   ponySymbol          /@/ nextgroup=ponyForeignFunction skipwhite skipempty
-syn match   ponySymbol          /:/ nextgroup=@ponyKeyword,ponyUserType skipwhite skipempty
+syn match   ponySymbol          /:/ nextgroup=@ponyKeyword,@ponyType,ponyBracketTL skipwhite skipempty
 hi def link ponySymbol          Special
 
-syn keyword ponyBuiltinTrait    Integer Real FloatingPoint FormatSpec PrefixSpec
+syn keyword ponyBuiltinTrait    Integer Real FloatingPoint FormatSpec PrefixSpec nextgroup=ponyTypeOperator,ponyKwOperatorT,@ponyBracketT skipwhite skipempty
 hi def link ponyBuiltinTrait    SpecialComment
 
-syn keyword ponyBuiltinType     Creatable Stringable Align AlignLeft AlignRight AlignCenter PrefixSpace PrefixSign PrefixNumber FormatSettings FormatSettingsDefault FormatSettingsHolder FormatDefault PrefixDefault FormatUTF32 FormatBinary FormatBinaryBare FormatOctal FormatOctalBare FormatHex FormatHexBare FormatHexSmall FormatHexSmallBare FormatInt FormatSettingsInt FormatDefaultNumber FormatFloat FormatSettingsFloat FormatExp FormatExpLarge FormatFix FormatFixLarge FormatGeneral FormatGeneralLarge
-syn keyword ponyBuiltinType     Pointer MaybePointer Platform SourceLoc
-syn keyword ponyBuiltinType     AsioEvent AsioEventID AsioEventNotify
-syn keyword ponyBuiltinType     Stdin StdinNotify DisposableActor
-syn keyword ponyBuiltinType     Compare Less Equal Greator HasEq Equatable Comparable
-syn keyword ponyBuiltinType     Seq Iterator ReadSeq ReadElement
-syn keyword ponyBuiltinType     ByteSeq ByteSeqIter OutStream StdStream
-syn keyword ponyBuiltinType     Array ArrayPairs ArrayKeys ArrayValues
-syn keyword ponyBuiltinType     String StringBytes StringRunes
-syn keyword ponyBuiltinType     F32 F64 Float
-syn keyword ponyBuiltinType     U8 U16 U32 U64 U128 ULong USize Unsigned
-syn keyword ponyBuiltinType     I8 I16 I32 I64 I128 ILong ISize Signed
-syn keyword ponyBuiltinType     None Any Env Bool Number AmbientAuth
+syn keyword ponyBuiltinType     None Any Env Bool Number AmbientAuth F32 F64 Float
+                          \     I8 I16 I32 I64 I128 ILong ISize Signed
+                          \     U8 U16 U32 U64 U128 ULong USize Unsigned
+                          \     String StringBytes StringRunes ArrayValues ByteSeqIter
+                          \     OutStream StdStream Array ArrayPairs ArrayKeys
+                          \     Comparable Seq Iterator ReadSeq ReadElement ByteSeq
+                          \     DisposableActor Compare Less Equal Greator HasEq Equatable
+                          \     AsioEvent AsioEventID AsioEventNotify Stdin StdinNotify
+                          \     FormatGeneralLarge Pointer MaybePointer Platform SourceLoc
+                          \     FormatExpLarge FormatFix FormatFixLarge FormatGeneral
+                          \     FormatDefaultNumber FormatFloat FormatSettingsFloat FormatExp
+                          \     FormatHexSmall FormatHexSmallBare FormatInt FormatSettingsInt
+                          \     FormatOctal FormatOctalBare FormatHex FormatHexBare
+                          \     PrefixDefault FormatUTF32 FormatBinary FormatBinaryBare
+                          \     FormatSettingsDefault FormatSettingsHolder FormatDefault
+                          \     PrefixSpace PrefixSign PrefixNumber FormatSettings
+                          \     Creatable Stringable Align AlignLeft AlignRight AlignCenter
+                          \     nextgroup=ponyTypeOperator,ponyKwOperatorT,@ponyBracketT skipwhite skipempty
 hi def link ponyBuiltinType     Type
 
 syn keyword ponyKwControl       return break continue error compile_intrinsic compile_error
@@ -121,17 +135,18 @@ hi def link ponyKwFunction      Keyword
 syn keyword ponyKwUse           use nextgroup=ponyString,@ponyKeyword,ponyUserPackage skipwhite skipempty
 hi def link ponyKwUse           Include
 
-syn keyword ponyKwTypedef       type
+syn keyword ponyKwTypedef       type nextgroup=@ponyKeyword,@ponyType skipwhite skipempty
 hi def link ponyKwTypedef       Typedef
 
-syn match   ponyKwCapability    /\v#%(read|send|share|alias|any)/ nextgroup=ponyKwRcapSuffix skipwhite skipempty
-syn keyword ponyKwCapability    ref val tag iso box trn nextgroup=ponyKwRcapSuffix skipwhite skipempty
+syn match   ponyKwCapability    /\v#%(read|send|share|alias|any)/ nextgroup=ponyKwRcapSuffix,ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
+syn keyword ponyKwCapability    ref val tag iso box trn nextgroup=ponyKwRcapSuffix,ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
 hi def link ponyKwCapability    StorageClass
 
-syn keyword ponyKwClass         actor class struct primitive trait interface nextgroup=@ponyKeyword,ponyUserType skipwhite skipempty
+syn keyword ponyKwClass         actor class struct primitive trait interface nextgroup=@ponyKeyword,@ponyType skipwhite skipempty
 hi def link ponyKwClass         Structure
 
 syn cluster ponyKeyword         contains=ponyKwClass,ponyKwCapability,ponyKwTypedef,ponyKwUse,ponyKwFunction,ponyKwField,ponyKwAtom,ponyKwControl,ponyKwOperator,ponyBoolean,ponyBuiltinType,ponyBuiltinTrait
+syn cluster ponyType            contains=ponyBuiltinTrait,ponyBuiltinType,ponyNormalType,ponyUserType
 
 syn match   ponyErrEscape       /\\\_.\?\_s*/ contained
 hi def link ponyErrEscape       Error

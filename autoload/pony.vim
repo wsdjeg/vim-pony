@@ -268,9 +268,9 @@ function! pony#Indent()
   unlet! l:start
 
   " If this line starts a match case,
-  if l:line =~# '^\s*|'
+  call cursor(v:lnum, 1)
+  if l:line =~# '^\s*|' && s:InKeyword(searchpos('|', 'znW', v:lnum))
     " find the start or the previous case of the match block,
-    call cursor(v:lnum, 1)
     let l:start = searchpairpos(s:cfstart, s:cfmiddle, s:cfend, 'bnW', s:skip3)
     if l:start != [0, 0]
       " then this line has the same indent as the start.
@@ -379,7 +379,7 @@ endfunction
 function! s:InBracket(...)
   let [l:lnum, l:col] = (type(a:1) == type([]) ? a:1 : a:000)
   for id in s:Or(synstack(l:lnum, l:col), [])
-    if synIDattr(id, 'name') ==# 'ponyBracket'
+    if synIDattr(id, 'name') =~# '^ponyBracket'
       return 1
     endif
   endfor

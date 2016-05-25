@@ -1,10 +1,12 @@
        // vim:debug=msg
+        type A is (I32 | U32)
+
 use "collections"
 use time = "time"
 
 actor Main
 //
-/** 
+/**
    */
   """
   hello
