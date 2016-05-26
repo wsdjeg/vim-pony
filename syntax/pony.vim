@@ -172,7 +172,7 @@ syn keyword ponyCommentTodo     TODO contained
 hi def link ponyCommentTodo     Todo
 syn cluster ponyCommentNote     contains=ponyCommentTodo,ponyCommentDamn,ponyCommentShit
 
-syn match   ponyComment         @//.*$@
+syn match   ponyComment         @//.*$@ contains=@ponyCommentNote
 hi def link ponyComment         Comment
 syn region  ponyNestedComment   start=@/\*@ end=@\*/@ contains=ponyNestedComment,@ponyCommentNote keepend extend fold
 hi def link ponyNestedComment   Comment
