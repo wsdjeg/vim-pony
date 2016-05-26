@@ -111,11 +111,9 @@ syn keyword ponyBuiltinType     None Any Env Bool Number AmbientAuth F32 F64 Flo
                           \     nextgroup=ponyTypeOperator,ponyKwOperatorT,@ponyBracketT skipwhite skipempty
 hi def link ponyBuiltinType     Type
 
-syn keyword ponyKwControl       return break continue error compile_intrinsic compile_error
-syn keyword ponyKwControl       ifdef try with recover
-syn keyword ponyKwControl       while for in repeat until
-syn keyword ponyKwControl       then elseif match
-syn keyword ponyKwControl       end else do
+syn keyword ponyKwControl       end else do then elseif match while for in repeat until
+                        \       ifdef try with recover return break continue error
+                        \       compile_intrinsic compile_error
 hi def link ponyKwControl       Keyword
 
 syn match   ponyKwControl       /\<if\>/
