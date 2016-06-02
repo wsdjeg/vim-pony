@@ -51,9 +51,10 @@ syn match   ponyErrUserPackage  /\<[^a-z]\|'/ contained
 hi def link ponyErrUserPackage  Error
 syn match   ponyUserPackage     /\v[_a-zA-Z]\w*'?/ contained contains=ponyErrUserPackage
 hi def link ponyUserPackage     Identifier
-syn match   ponyErrUserType     /\v<%([^_A-Z]|_[^A-Z])|'/ contained
-hi def link ponyErrUserType     Error
-syn match   ponyUserType        /\v[_a-zA-Z]\w*'?/ contained contains=ponyErrUserType nextgroup=ponyTypeOperator,ponyKwOperatorT,@ponyBracketT skipwhite skipempty
+"syn match   ponyErrUserType     /\v<%([^_A-Z]|_[^A-Z])|'/ contained
+"hi def link ponyErrUserType     Error
+"syn match   ponyUserType        /\v[_a-zA-Z]\w*'?/ contained contains=ponyErrUserType nextgroup=ponyTypeOperator,ponyKwOperatorT,@ponyBracketT skipwhite skipempty
+syn match   ponyUserType        /\v_?[A-Z]\w*/ contained nextgroup=ponyTypeOperator,ponyKwOperatorT,@ponyBracketT skipwhite skipempty
 syn match   ponyErrUserMethod   /\v<%([^_a-z]|_[^a-z])|'/ contained
 hi def link ponyErrUserMethod   Error
 syn match   ponyUserMethod      /\v[_a-zA-Z]\w*'?/ contained contains=ponyErrUserMethod

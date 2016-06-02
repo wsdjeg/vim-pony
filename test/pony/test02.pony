@@ -27,6 +27,7 @@ world
     let s = "hi"
 "hi"
 let fn = lambda (s: String): Bool => x.size() > 3 end
+let k = Main(env)
 
   new create(env: Env) =>
     let child_pid = @fork[I32]()
