@@ -65,8 +65,8 @@ hi def link ponyForeignFunction Macro
 syn keyword ponyBoolean         true false
 hi def link ponyBoolean         Boolean
 
-syn match   ponyBracketTL       /[\[(]/ contained nextgroup=@ponyKeyword,@ponyType
-syn match   ponyBracketTR       /[)\]]/ contained nextgroup=ponyTypeOperator,ponyKwOperatorT
+syn match   ponyBracketTL       /[\[(]/ contained nextgroup=@ponyKeyword,@ponyType skipwhite skipempty
+syn match   ponyBracketTR       /[)\]]/ contained nextgroup=ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
 syn match   ponyBracket         /[{\[()\]}]/
 
 syn cluster ponyBracketT        contains=ponyBracketTL,ponyBracketTR
