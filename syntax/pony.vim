@@ -141,7 +141,7 @@ hi def link ponyKwCapability    StorageClass
 syn keyword ponyKwClass         actor class struct primitive trait interface nextgroup=@ponyKeyword,@ponyType skipwhite skipempty
 hi def link ponyKwClass         Structure
 
-syn keyword ponyKwFnCapability  ref val tag iso box trn contained nextgroup=ponyUserMethod skipwhite skipempty
+syn keyword ponyKwFnCapability  ref val tag iso box trn contained nextgroup=@ponyKeyword,ponyUserMethod skipwhite skipempty
 hi def link ponyKwFnCapability  StorageClass
 syn keyword ponyKwFunction      new be fun nextgroup=ponyKwFnCapability,@ponyKeyword,ponyUserMethod skipwhite skipempty
 hi def link ponyKwFunction      Keyword
