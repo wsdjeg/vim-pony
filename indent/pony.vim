@@ -1,7 +1,7 @@
 " Vim indent file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2016 May 26
+" Last Change:  2016 June 8
 
 if exists('b:did_indent')
   finish
@@ -13,8 +13,8 @@ set cpo&vim
 
 setlocal nolisp
 setlocal nocindent
-setlocal noautoindent
 setlocal nosmartindent
+setlocal autoindent
 setlocal indentexpr=pony#Indent()
 setlocal indentkeys=!^F,o,O,0\|,0(,0),0[,0],0{,0},0==>,0=end,0=then,0=else,0=in,0=do,0=until,0=actor,0=class,0=struct,0=primitive,0=trait,0=interface,0=new,0=be,0=fun,0=type,0=use
 setlocal cinkeys=!^F,o,O,0\|,0(,0),0[,0],0{,0},0==>,0=end,0=then,0=else,0=in,0=do,0=until,0=actor,0=class,0=struct,0=primitive,0=trait,0=interface,0=new,0=be,0=fun,0=type,0=use
