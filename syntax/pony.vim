@@ -1,7 +1,7 @@
 " Vim syntax file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2016 May 26
+" Last Change:  2016 June 8
 
 if exists('b:current_syntax')
   finish
@@ -128,21 +128,23 @@ hi def link ponyKwAtom          Keyword
 syn keyword ponyKwField         let var embed nextgroup=@ponyKeyword,ponyUserVariable skipwhite skipempty
 hi def link ponyKwField         Keyword
 
-syn keyword ponyKwFunction      new be fun nextgroup=@ponyKeyword,ponyUserMethod skipwhite skipempty
-hi def link ponyKwFunction      Keyword
-
 syn keyword ponyKwUse           use nextgroup=ponyString,@ponyKeyword,ponyUserPackage skipwhite skipempty
 hi def link ponyKwUse           Include
 
 syn keyword ponyKwTypedef       type nextgroup=@ponyKeyword,@ponyType skipwhite skipempty
 hi def link ponyKwTypedef       Typedef
 
-syn match   ponyKwCapability    /\v#%(read|send|share|alias|any)/ nextgroup=ponyKwRcapSuffix,ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
+syn match   ponyKwCapability    /\v#%(read|send|share|alias|any)>/ nextgroup=ponyKwRcapSuffix,ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
 syn keyword ponyKwCapability    ref val tag iso box trn nextgroup=ponyKwRcapSuffix,ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
 hi def link ponyKwCapability    StorageClass
 
 syn keyword ponyKwClass         actor class struct primitive trait interface nextgroup=@ponyKeyword,@ponyType skipwhite skipempty
 hi def link ponyKwClass         Structure
+
+syn keyword ponyKwFnCapability  ref val tag iso box trn contained nextgroup=ponyUserMethod skipwhite skipempty
+hi def link ponyKwFnCapability  StorageClass
+syn keyword ponyKwFunction      new be fun nextgroup=ponyKwFnCapability,@ponyKeyword,ponyUserMethod skipwhite skipempty
+hi def link ponyKwFunction      Keyword
 
 syn cluster ponyKeyword         contains=ponyKwClass,ponyKwCapability,ponyKwTypedef,ponyKwUse,ponyKwFunction,ponyKwField,ponyKwAtom,ponyKwControl,ponyKwOperator,ponyBoolean,ponyBuiltinType,ponyBuiltinTrait
 syn cluster ponyType            contains=ponyBuiltinTrait,ponyBuiltinType,ponyNormalType,ponyUserType

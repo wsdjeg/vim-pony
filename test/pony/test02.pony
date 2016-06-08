@@ -20,7 +20,7 @@ world
 """
   new hi(env: Env) => 3
 
-  fun no() =>
+  fun ref no() =>
     /**
    * comment
        */
@@ -49,9 +49,8 @@ let k = Main(env)
          *  */
      *------------*/
       //env.out.print("This sentence is true.")
-      //env.exitcode(-1)
       @printf[I32]("This sentence is true.\n".cstring())
-    @exit[None](I32(-1))
+    @_exit[None](I32(-1))
     else
         var wstatus: I32 = 0
       let woption: I32 = 0
