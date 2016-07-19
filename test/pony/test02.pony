@@ -18,7 +18,10 @@ actor Main
 """
 world
 """
-  new hi(env: Env) => 3
+  new hi(env: Env,
+x: String,
+  s: String)
+ => 3
 
   fun ref no() =>
     /**
@@ -28,6 +31,20 @@ world
 "hi"
 let fn = lambda (s: String): Bool => x.size() > 3 end
 let k = Main(env)
+let a = object
+  let b = object
+fun hi() => None
+      new hi() => None
+      be hi() =>
+    let c = object
+      let d: U8 = 8
+      end
+let notify = object iso
+fun ref apply(data: Array[U8] iso) => consume data
+fun ref dispose() => None
+end
+end
+end
 
   new create(env: Env) =>
     let child_pid = @fork[I32]()

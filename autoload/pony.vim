@@ -1,7 +1,7 @@
 " Vim plugin file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2016 May 26
+" Last Change:  2016 July 20
 
 if exists('b:did_autoload')
   finish
@@ -19,7 +19,7 @@ let s:skip4 = '!<SID>InBracket(line("."), col("."))'
 let s:cfstart = '\v<%(ifdef|if|match|while|for|repeat|try|with|recover|object|lambda)>'
 let s:cfmiddle = '\v<%(then|elseif|else|until|do|in)>|\|'
 let s:cfend = '\v<end>'
-let s:bstartp = '\v<%(ifdef|if|then|elseif|else|(match)|while|for|in|do|try|with|recover|repeat|until|object|%(lambda))>'
+let s:bstartp = '\v<%(ifdef|if|then|elseif|else|(match)|while|for|in|do|try|with|recover|repeat|until|(object)|lambda)>'
 
 function! pony#Indent()
   if v:lnum <= 1
@@ -33,12 +33,7 @@ function! pony#Indent()
   endif
 
   if s:InComment2(l:pnzpos) > 1
-    let l:indent = searchpairpos('/\*', '', '/\@<!\*/\zs', 'cbnW', s:skip2)[1]
-    if getline(v:lnum) !~# '^\s*\*'
-      let l:indent += 2
-    endif
-    "echomsg 'Comment' (l:pnzpos[0] . '-' . v:lnum) l:indent
-    return l:indent
+    return cindent(v:lnum)
   endif
 
   if s:InLiteral2(l:pnzpos)
@@ -64,63 +59,51 @@ function! pony#Indent()
 
   " FIXME?
   let l:continuing = 0
-  let l:ppnblnum = s:PrevNonblank(l:pnblnum - 1)
-  " If the previous line is also continuing another line,
-  if s:IsContinued(l:ppnblnum) && !s:IsContinued(l:pnblnum)
-    "echomsg 'Continued2' l:ppnblnum indent(l:ppnblnum)
-    " if the previous line is part of the definition of a class,
-    if getline(l:ppnblnum) =~# '\v^\s*%(actor|class|struct|primitive|trait|interface)>'
-      " reset the indent level.
-      "echomsg 'Continuing8' (l:ppnblnum . '-' . v:lnum) l:shiftwidth
-      let l:continuing = 1
-      let l:indent = l:shiftwidth
-    " if the previous line is part of the definition of a method,
-    elseif getline(l:ppnblnum) =~# '\v^\s*%(fun|new|be)>'
-      " reset the indent level.
-      "echomsg 'Continuing7' (l:ppnblnum . '-' . v:lnum) (l:shiftwidth * 2)
-      let l:continuing = 1
-      let l:indent = l:shiftwidth * 2
-    else
-      " keep using the previous indent.
-      "echomsg 'Continuing6' (l:pnblnum . '-' . v:lnum) l:pnbindent
-      let l:continuing = 1
-      let l:indent = l:pnbindent
-    endif
   " If the previous line ends with a unary or binary operator,
-  elseif s:IsContinued(l:pnblnum)
-    "echomsg 'Continued1' l:pnblnum l:pnbindent
-    if s:IsContinued(l:ppnblnum)
+  if s:IsContinued(l:pnblnum)
+    let l:contlnum = l:pnblnum
+    let l:ppcontinued = 0
+    let l:ppnblnum = s:PrevNonblank(l:pnblnum - 1)
+    while s:IsContinued(l:ppnblnum)
+      let l:ppcontinued += 1
+      let l:contlnum = l:ppnblnum
+      let l:ppnblnum = s:PrevNonblank(l:ppnblnum - 1)
+    endwhile
+    let l:contindent = indent(l:contlnum)
+    "echomsg 'Continued1' l:pnblnum l:contlnum
+    " If the previous line is also continuing another line,
+    if l:ppcontinued
       " keep using the previous indent.
-      "echomsg 'Continuing5' (l:pnblnum . '-' . v:lnum) l:pnbindent
+      "echomsg 'Continuing1' (l:contlnum . '-' . v:lnum) (l:contindent + l:shiftwidth)
       let l:continuing = 1
-      let l:indent = l:pnbindent
+      let l:indent = l:contindent + l:shiftwidth
     " if the previous line is part of the definition of a class,
     elseif l:pnbline =~# '\v^\s*%(actor|class|struct|primitive|trait|interface)>'
       " reset the indent level.
-      "echomsg 'Continuing4' (l:pnblnum . '-' . v:lnum) (l:shiftwidth * 2)
+      "echomsg 'Continuing2' (l:pnblnum . '-' . v:lnum) (l:shiftwidth * 2)
       let l:continuing = 1
       let l:indent = l:shiftwidth * 2
     " if the previous line is part of the definition of a method,
     elseif l:pnbline =~# '\v^\s*%(fun|new|be)>'
       " reset the indent level.
-      "echomsg 'Continuing3' (l:pnblnum . '-' . v:lnum) (l:shiftwidth * 2)
+      "echomsg 'Continuing3' (l:pnblnum . '-' . v:lnum) (l:pnbindent + l:shiftwidth)
       let l:continuing = 1
-      let l:indent = l:shiftwidth * 2
+      let l:indent = l:pnbindent + l:shiftwidth
     " if the previous line is the start of a definition body,
     elseif l:pnbline =~# '=>\s*$'
       " indent this line.
-      "echomsg 'Continuing2' (l:pnblnum . '-' . v:lnum) (l:pnbindent + l:shiftwidth)
+      "echomsg 'Continuing4' (l:pnblnum . '-' . v:lnum) (l:pnbindent + l:shiftwidth)
       let l:continuing = 1
       let l:indent = l:pnbindent + l:shiftwidth
     else
       " indent this line twice as far.
-      "echomsg 'Continuing1' (l:pnblnum . '-' . v:lnum) (l:pnbindent + l:shiftwidth * 2)
+      "echomsg 'Continuing5' (l:pnblnum . '-' . v:lnum) (l:pnbindent + l:shiftwidth * 2)
       let l:continuing = 1
       let l:indent = l:pnbindent + l:shiftwidth * 2
     endif
-  endif
 
-  unlet! l:ppnblnum
+    unlet! l:contlnum l:contindent l:ppnblnum l:ppcontinued
+  endif
 
   " If the previous line contains an unmatched opening bracket
   if !l:continuing && l:pnbline =~# '[{\[(]'
@@ -242,24 +225,17 @@ function! pony#Indent()
 
   " If this line starts a method definition,
   if l:line =~# '\v^\s*%(new|be|fun)>'
-    " reset the indent level.
-    return l:shiftwidth
-  endif
-
-  " If the previous line starts a class definition,
-  if l:pnbline =~# '\v^\s*%(actor|class|struct|primitive|trait|interface)>'
-    " reset the indent level.
-    if s:IsContinued(l:pnblnum)
-      return l:shiftwidth * 2
-    else
-      return l:shiftwidth
+    call cursor(v:lnum, 1)
+    let l:start = searchpairpos(s:cfstart, s:cfmiddle, s:cfend, 'bW', s:skip3)
+    if l:start != [0, 0]
+      let l:start = searchpos(s:bstartp, 'zcnpW', l:start[0])
+      " see if it is in an object block,
+      if l:start[2] == 3
+        "echomsg 'Method in object' (l:start[0] . '-' . v:lnum) (l:shiftwidth + indent(l:start[0]))
+        return l:shiftwidth + indent(l:start[0])
+      endif
     endif
-  endif
-
-  " If the previous line starts a method definition,
-  if l:pnbline =~# '\v^\s*%(new|be|fun)>'
-    " reset the indent level.
-    return l:shiftwidth * 2
+    return l:shiftwidth
   endif
 
   " If this line starts a match case,
@@ -288,6 +264,21 @@ function! pony#Indent()
     endif
 
     unlet! l:start
+  endif
+
+  " If the previous line starts a class definition,
+  if l:pnbline =~# '\v^\s*%(actor|class|struct|primitive|trait|type|interface)>'
+    " reset the indent level.
+    if s:IsContinued(l:pnblnum)
+      return l:shiftwidth * 2
+    else
+      return l:shiftwidth
+    endif
+  endif
+
+  " If the previous line starts a method definition,
+  if l:pnbline =~# '\v^\s*%(new|be|fun)>'
+    return l:pnbindent + l:shiftwidth
   endif
 
   " If the previous line starts (part of) a control flow,
