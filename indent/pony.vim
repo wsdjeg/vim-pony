@@ -1,7 +1,7 @@
 " Vim indent file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2016 June 8
+" Last Change:  2016 July 22
 
 if exists('b:did_indent')
   finish
@@ -16,8 +16,8 @@ setlocal nocindent
 setlocal nosmartindent
 setlocal autoindent
 setlocal indentexpr=pony#Indent()
-setlocal indentkeys=!^F,o,O,0\|,0(,0),0[,0],0{,0},0==>,0=end,0=then,0=else,0=in,0=do,0=until,0=actor,0=class,0=struct,0=primitive,0=trait,0=interface,0=new,0=be,0=fun,0=type,0=use
-setlocal cinkeys=!^F,o,O,0\|,0(,0),0[,0],0{,0},0==>,0=end,0=then,0=else,0=in,0=do,0=until,0=actor,0=class,0=struct,0=primitive,0=trait,0=interface,0=new,0=be,0=fun,0=type,0=use
+setlocal indentkeys=!^F,o,O,0\|,0(,0),0[,0],0{,0},0==>,0=\"\"\",0=end,0=then,0=else,0=in,0=do,0=until,0=actor,0=class,0=struct,0=primitive,0=trait,0=interface,0=new,0=be,0=fun,0=type,0=use
+setlocal cinkeys=!^F,o,O,0\|,0(,0),0[,0],0{,0},0==>,0=\"\"\",0=end,0=then,0=else,0=in,0=do,0=until,0=actor,0=class,0=struct,0=primitive,0=trait,0=interface,0=new,0=be,0=fun,0=type,0=use
 setlocal cinwords=ifdef,if,match,while,for,repeat,try,with,recover,object,lambda,then,elseif,else,until,do,actor,class,struct,primitive,trait,interface,new,be,fun
 augroup pony
 autocmd pony CursorHold <buffer> call pony#ClearTrailingSpace(1, 1)

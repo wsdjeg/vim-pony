@@ -110,6 +110,25 @@ function! pony#Indent()
     unlet! l:contlnum l:ppnblnum l:ppcontinued
   endif
 
+  " If this line starts a document string,
+  if !l:continuing && l:line =~# '^\s*"""'
+    let l:ppnblnum = s:PrevNonblank(l:pnblnum - 1)
+    if s:IsContinued(l:ppnblnum)
+      let l:contlnum = l:ppnblnum
+      while s:IsContinued(l:ppnblnum)
+        let l:contlnum = l:ppnblnum
+        let l:ppnblnum = s:PrevNonblank(l:ppnblnum - 1)
+      endwhile
+      if getline(l:contlnum) =~# '\v^\s*%(actor|class|struct|primitive|trait|type|interface)>'
+        " reset the indent level.
+        "echomsg 'DocString' (l:contlnum . '-' . v:lnum) l:shiftwidth
+        return l:shiftwidth
+      endif
+    endif
+
+    unlet! l:contlnum l:ppnblnum
+  endif
+
   " If the previous line contains an unmatched opening bracket
   if !l:continuing && l:pnbline =~# '[{\[(]'
     " if the line ends with an opening bracket,
