@@ -1,7 +1,7 @@
 " Vim plugin file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2016 July 20
+" Last Change:  2016 July 22
 
 if exists('b:did_autoload')
   finish
@@ -69,16 +69,21 @@ function! pony#Indent()
       let l:contlnum = l:ppnblnum
       let l:ppnblnum = s:PrevNonblank(l:ppnblnum - 1)
     endwhile
-    let l:contindent = indent(l:contlnum)
     "echomsg 'Continued1' l:pnblnum l:contlnum
     " If the previous line is also continuing another line,
     if l:ppcontinued
-      " keep using the previous indent.
-      "echomsg 'Continuing1' (l:contlnum . '-' . v:lnum) (l:contindent + l:shiftwidth)
       let l:continuing = 1
-      let l:indent = l:contindent + l:shiftwidth
+      if getline(l:contlnum) =~# '\v^\s*%(actor|class|struct|primitive|trait|type|interface)>'
+        " reset the indent level.
+        "echomsg 'Continuing0' (l:contlnum . '-' . v:lnum) (l:shiftwidth * 2)
+        let l:indent = l:shiftwidth * 2
+      else
+        " keep using the previous indent.
+        "echomsg 'Continuing1' (l:pnblnum . '-' . v:lnum) l:pnbindent
+        let l:indent = l:pnbindent
+      endif
     " if the previous line is part of the definition of a class,
-    elseif l:pnbline =~# '\v^\s*%(actor|class|struct|primitive|trait|interface)>'
+    elseif l:pnbline =~# '\v^\s*%(actor|class|struct|primitive|trait|type|interface)>'
       " reset the indent level.
       "echomsg 'Continuing2' (l:pnblnum . '-' . v:lnum) (l:shiftwidth * 2)
       let l:continuing = 1
@@ -102,7 +107,7 @@ function! pony#Indent()
       let l:indent = l:pnbindent + l:shiftwidth * 2
     endif
 
-    unlet! l:contlnum l:contindent l:ppnblnum l:ppcontinued
+    unlet! l:contlnum l:ppnblnum l:ppcontinued
   endif
 
   " If the previous line contains an unmatched opening bracket
