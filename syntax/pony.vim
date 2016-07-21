@@ -1,7 +1,7 @@
 " Vim syntax file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2016 June 8
+" Last Change:  2016 July 22
 
 if exists('b:current_syntax')
   finish
@@ -74,7 +74,7 @@ syn cluster ponyBracketT        contains=ponyBracketTL,ponyBracketTR
 syn match   ponyKwRcapSuffix    /[!^]/ nextgroup=ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
 hi def link ponyKwRcapSuffix    StorageClass
 
-syn match   ponyTypeOperator    /[|&,]/ contained nextgroup=ponyBracketTL,@ponyKeyword,@ponyType
+syn match   ponyTypeOperator    /\v[&,]|\|%(.*\=\>)@!/ contained nextgroup=ponyBracketTL,@ponyKeyword,@ponyType
 hi def link ponyTypeOperator    Operator
 syn match   ponyNumberOperator  /==\|!=\|<<\|>>\|<=\|>=\|[+\-*/%<>]/
 hi def link ponyNumberOperator  Operator
