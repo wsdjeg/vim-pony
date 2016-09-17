@@ -1,7 +1,7 @@
 " Vim plugin file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2016 July 22
+" Last Change:  2016 September 18
 
 if exists('b:did_autoload')
   finish
@@ -33,6 +33,7 @@ function! pony#Indent()
   endif
 
   if s:InComment2(l:pnzpos) > 1
+    "echomsg 'Comment' (l:pnzpos[0] . '-' . v:lnum) -1
     return cindent(v:lnum)
   endif
 
@@ -398,9 +399,9 @@ function! s:InComment(...)
   let l:i = len(l:stack)
   while l:i > 0
     let l:sname = synIDattr(l:stack[l:i - 1], 'name')
-    if l:sname ==# 'ponyNestedComment'
-      return 1 + l:i
-    elseif l:sname ==# 'ponyComment'
+    if l:sname =~# '^ponyNestedCommentX\?$'
+      return 1 + l:i - (l:sname =~# 'X$')
+    elseif l:sname =~# '^ponyCommentX\?$'
       return 1
     endif
     let l:i -= 1
@@ -410,16 +411,19 @@ endfunction
 
 function! s:InLiteral(...)
   let [l:lnum, l:col] = (type(a:1) == type([]) ? a:1 : a:000)
-  for id in s:Or(synstack(l:lnum, l:col), [])
-    let l:sname = synIDattr(id, 'name')
-    if l:sname ==# 'ponyDocumentString'
+  let l:stack = synstack(l:lnum, l:col)
+  let l:i = len(l:stack)
+  while l:i > 0
+    let l:sname = synIDattr(l:stack[l:i - 1], 'name')
+    if l:sname =~# '^ponyDocumentStringX\?$'
       return 3
-    elseif l:sname ==# 'ponyString'
+    elseif l:sname =~# '^ponyStringX\?$'
       return 2
-    elseif l:sname ==# 'ponyCharacter'
+    elseif l:sname =~# '^ponyCharacterX\?$'
       return 1
     endif
-  endfor
+    let l:i -= 1
+  endwhile
   return 0
 endfunction
 
@@ -429,48 +433,21 @@ endfunction
 " |/* /*inside*/ */
 "   ^^^^^^^^^^^^^^
 function! s:InComment2(...)
-  let l:type = call('s:InComment', a:000)
-  if l:type < 1
-    return 0
-  endif
-  if l:type > 2
-    return l:type
-  endif
-
-  let l:c = call('s:CharAtCursor', a:000)
-  if l:c !=# '/'
-    return l:type
-  endif
-
-  call call('cursor', a:000)
-  let l:pos = getcurpos()[1:2]
-  if l:type == 1
-    "         v 
-    " |/*//*/ // //B
-    " |// //C
-    "  ^ 
-    if l:pos[1] == 1
+  let [l:lnum, l:col] = (type(a:1) == type([]) ? a:1 : a:000)
+  let l:stack = synstack(l:lnum, l:col)
+  let l:i = len(l:stack)
+  while l:i > 0
+    let l:sname = synIDattr(l:stack[l:i - 1], 'name')
+    if l:sname ==# 'ponyNestedComment'
+      return 1 + l:i
+    elseif l:sname ==# 'ponyComment'
+      return 1
+    elseif l:sname =~# '\v^pony%(Nested)?CommentX$'
       return 0
     endif
-    if l:pos != searchpos('//', 'cbW', l:pos[0])
-      return l:type
-    endif
-    if s:InComment(searchpos('//', 'bW', l:pos[0])) == l:type
-      return l:type
-    endif
-    return 0
-  else
-    "   v    v       v
-    " | /**/ /* /A/ */
-    ">|/* /B
-    " |/ */
-    "     ^
-    if l:pos == searchpairpos('/\*', '', '/\@<!\*/\zs', 'cbnW', s:skip2, l:pos[0])
-          \ || l:pos == searchpairpos('/\*', '', '/\@<!\*\zs/', 'zcnW', s:skip2, l:pos[0])
-      return 0
-    endif
-    return l:type
-  endif
+    let l:i -= 1
+  endwhile
+  return 0
 endfunction
 
 " NOTE:
@@ -479,68 +456,23 @@ endfunction
 " |"""inside"""""
 "   ^^^^^^^^^^^^
 function! s:InLiteral2(...)
-  let l:type = call('s:InLiteral', a:000)
-  if !l:type
-    return 0
-  endif
-
-  let l:c = call('s:CharAtCursor', a:000)
-  if l:type == 1 ? l:c !=# "'" : l:c !=# '"'
-    return l:type
-  endif
-
-  call call('cursor', a:000)
-
-  "  v
-  " |'A'
-  " |"B"
-  "  ^
-  if l:type < 3 && col('.') == 1
-    return 0
-  endif
-
-  " |'A'"B"
-  "  ^ ^^ ^
-  let l:ppos = searchpos('.', 'bnW')
-  if l:type != s:InLiteral(l:ppos)
-    return 0
-  endif
-  let l:npos = searchpos('.', 'znW')
-  if l:type != s:InLiteral(l:npos)
-    return 0
-  endif
-
-  let l:pc = s:CharAtCursor(l:ppos)
-  let l:nc = s:CharAtCursor(l:npos)
-
-  if l:type < 3
-    "     v   v
-    " |'A''B\''
-    " |"A""B\""
-    "     ^   ^
-    return l:pc !=# '\' ? 0 : l:type
-  else
-    "    v v  v
-    " |"""A""""
-    " |"""B""""
-    "  ^ ^ ^
-    if l:pc !=# '"' || l:nc !=# '"'
-      return l:type
-    endif
-    "         v
-    " |"""A""""|
-    "  ********
-    ">|""""""""|<
-    "  ********
-    " |"""B""""|
-    "  ^
-    let l:pos = getcurpos()[1:2]
-    if l:pos == searchpos('\v"@<!("""%((""")@!\_.)*"""+)@=', 'cbnW', l:pos[0])
-          \ || l:pos == searchpos('\v("""%((""")@!\_.)*"""+)@<=', 'zcW', l:pos[0])
+  let [l:lnum, l:col] = (type(a:1) == type([]) ? a:1 : a:000)
+  let l:stack = synstack(l:lnum, l:col)
+  let l:i = len(l:stack)
+  while l:i > 0
+    let l:sname = synIDattr(l:stack[l:i - 1], 'name')
+    if l:sname ==# 'ponyDocumentString'
+      return 3
+    elseif l:sname ==# 'ponyString'
+      return 2
+    elseif l:sname ==# 'ponyCharacter'
+      return 1
+    elseif l:sname =~# '\v^pony%(DocumentString|String|Character)X$'
       return 0
-    end
-    return l:type
-  endif
+    endif
+    let l:i -= 1
+  endwhile
+  return 0
 endfunction
 
 function! s:CharAtCursor(...)

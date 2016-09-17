@@ -1,7 +1,7 @@
 " Vim syntax file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2016 July 22
+" Last Change:  2016 September 18
 
 if exists('b:current_syntax')
   finish
@@ -157,12 +157,12 @@ syn match   ponyEscape          /\v\\u\x{4}/ contained
 syn match   ponyEscape          /\v\\U\x{6}/ contained
 hi def link ponyEscape          SpecialChar
 
-syn region  ponyCharacter       start=/\w\@<!'/ skip=/\\'/ end=/'/ contains=ponyEscape,ponyErrEscape
+syn region  ponyCharacter       matchgroup=ponyCharacterX start=/\w\@<!'/ skip=/\\'/ end=/'/ contains=ponyEscape,ponyErrEscape
 hi def link ponyCharacter       Character
 
-syn region  ponyString          start=/"/ skip=/\\"/ end=/"/ contains=ponyEscape,ponyErrEscape
+syn region  ponyString          matchgroup=ponyStringX start=/"/ skip=/\\"/ end=/"/ contains=ponyEscape,ponyErrEscape
 hi def link ponyString          String
-syn region  ponyDocumentString  start=/"""/ end=/""""*/
+syn region  ponyDocumentString  matchgroup=ponyDocumentStringX start=/"\ze""/ end=/"""*\zs"/
 hi def link ponyDocumentString  String
 
 syn keyword ponyCommentShit     XXX contained
@@ -173,10 +173,17 @@ syn keyword ponyCommentTodo     TODO contained
 hi def link ponyCommentTodo     Todo
 syn cluster ponyCommentNote     contains=ponyCommentTodo,ponyCommentDamn,ponyCommentShit
 
-syn match   ponyComment         @//.*$@ contains=@ponyCommentNote
+syn match   ponyComment         @//.*$@ contains=@ponyCommentNote,ponyCommentX
 hi def link ponyComment         Comment
-syn region  ponyNestedComment   start=@/\*@ end=@\*/@ contains=ponyNestedComment,@ponyCommentNote keepend extend fold
+syn region  ponyNestedComment   matchgroup=ponyNestedCommentX start=@/\ze\*@ end=@\*\zs/@ contains=ponyNestedComment,@ponyCommentNote keepend extend fold
 hi def link ponyNestedComment   Comment
+
+" for indent check
+syn match   ponyCommentX        @/\ze/.*$@ contained transparent
+hi def link ponyNestedCommentX  Comment
+hi def link ponyCharacterX      Character
+hi def link ponyStringX         String
+hi def link ponyDocumentStringX String
 
 
 let &cpo = s:cpo_save
