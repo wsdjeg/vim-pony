@@ -1,7 +1,7 @@
 " Vim plugin file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2016 September 18
+" Last Change:  2016 October 11
 
 if exists('b:did_autoload')
   finish
@@ -131,9 +131,9 @@ function! pony#Indent()
   endif
 
   " If the previous line contains an unmatched opening bracket
-  if !l:continuing && l:pnbline =~# '[{\[(]'
+  if !l:continuing && l:pnbline =~# '[{[(]'
     " if the line ends with an opening bracket,
-    if l:pnbline =~# '[{\[(]\s*$' && !s:InCommentOrLiteral(l:pnblnum, col([l:pnblnum, '$']) - 1)
+    if l:pnbline =~# '[{[(]\s*$' && !s:InCommentOrLiteral(l:pnblnum, col([l:pnblnum, '$']) - 1)
       " indent this line.
       let l:indent += l:shiftwidth
     else

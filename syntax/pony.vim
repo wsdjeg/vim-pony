@@ -1,7 +1,7 @@
 " Vim syntax file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2016 September 18
+" Last Change:  2016 October 11
 
 if exists('b:current_syntax')
   finish
@@ -65,9 +65,9 @@ hi def link ponyForeignFunction Macro
 syn keyword ponyBoolean         true false
 hi def link ponyBoolean         Boolean
 
-syn match   ponyBracketTL       /[\[(]/ contained nextgroup=@ponyKeyword,@ponyType skipwhite skipempty
+syn match   ponyBracketTL       /[[(]/ contained nextgroup=@ponyKeyword,@ponyType skipwhite skipempty
 syn match   ponyBracketTR       /[)\]]/ contained nextgroup=ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
-syn match   ponyBracket         /[{\[()\]}]/
+syn match   ponyBracket         /[{[()\]}]/
 
 syn cluster ponyBracketT        contains=ponyBracketTL,ponyBracketTR
 
