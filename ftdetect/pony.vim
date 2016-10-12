@@ -1,1 +1,1 @@
-autocmd BufRead,BufNewFile *.pony set filetype=pony
+autocmd BufRead,BufNewFile *.pony setf pony
