@@ -1,7 +1,7 @@
 " Vim indent file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2016 July 22
+" Last Change:  2016 October 12
 
 if exists('b:did_indent')
   finish
@@ -25,7 +25,7 @@ autocmd pony InsertEnter <buffer> call pony#ClearTrailingSpace(0, 0)
 autocmd pony InsertLeave <buffer> call pony#ClearTrailingSpace(0, 1)
 autocmd pony BufWritePre <buffer> call pony#ClearTrailingSpace(1, 1)
 augroup END
-let b:undo_indent = 'setlocal lisp< cindent< autoindent< smartindent< indentexpr< indentkeys< cinkeys< cinwords<'
+let b:undo_indent = 'set lisp< cindent< autoindent< smartindent< indentexpr< indentkeys< cinkeys< cinwords<'
       \ . ' | execute("autocmd! pony") | augroup! pony'
 
 
