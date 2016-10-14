@@ -1,7 +1,7 @@
 " Vim filetype plugin file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2016 June 7
+" Last Change:  2016 October 14
 
 if exists('b:did_ftplugin')
   finish
@@ -30,6 +30,9 @@ let b:match_words = '\v<%(ifdef|if|match|while|for|repeat|try|with|recover|objec
 " TODO: for more concise behavior
 "let b:match_words = 'pony#GetMatchWords()'
 source $VIMRUNTIME/macros/matchit.vim
+
+let b:undo_ftplugin = 'set comments< commentstring< formatoptions< path< include< includeexpr< define< isident< iskeyword< suffixesadd< matchpairs<'
+      \ . ' | unlet! b:match_ignorecase b:match_skip b:match_words'
 
 
 let &cpo = s:cpo_save
