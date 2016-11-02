@@ -1,7 +1,7 @@
 " Vim indent file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2016 October 14
+" Last Change:  2016 November 2
 
 if exists('b:did_indent')
   finish
@@ -29,7 +29,7 @@ augroup pony
 augroup END
 
 let b:undo_indent = 'set lisp< cindent< autoindent< smartindent< indentexpr< indentkeys< cinkeys< cinwords<'
-      \ . ' | execute("autocmd! pony")'
+      \ . ' | execute("autocmd! pony * <buffer>")'
 
 
 let &cpo = s:cpo_save
