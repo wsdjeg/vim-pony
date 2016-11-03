@@ -1,7 +1,7 @@
 " Vim plugin file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2016 November 2
+" Last Change:  2016 November 3
 
 " TODO: Make sure echomsg is off for release.
 let s:cpo_save = &cpo
@@ -379,7 +379,7 @@ endfunction
 function! s:InBracket(...)
   let [l:lnum, l:col] = (type(a:1) == type([]) ? a:1 : a:000)
   for id in s:Or(synstack(l:lnum, l:col), [])
-    if synIDattr(id, 'name') =~# '^ponyBracket'
+    if synIDattr(id, 'name') ==# 'ponyBracket'
       return 1
     endif
   endfor

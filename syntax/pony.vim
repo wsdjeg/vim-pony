@@ -54,42 +54,46 @@ hi def link ponyUserPackage     Identifier
 syn match   ponyErrUserType     /\v_>|<%([^_A-Z]|_[^A-Z])/ contained
 hi def link ponyErrUserType     Error
 " XXX: ponyTypeOperator:, no check: fun work(job: String, done: Bool)
-syn match   ponyUserType2       /\v[_a-zA-Z]\w*/ contained contains=ponyErrUserType nextgroup=ponyTypeOperator,ponyKwOperatorT,@ponyBracketT skipwhite skipempty
+syn match   ponyUserType2       /\v[_a-zA-Z]\w*/ contained contains=ponyErrUserType nextgroup=ponyTypeOperator,ponyKwOperatorT,ponyBracketT skipwhite skipempty
 syn match   ponyUserType        /\v_?[A-Z]\w*/ contains=ponyErrUserType
 syn match   ponyErrUserMethod   /\v_>|<%([^_a-z]|_[^a-z])/ contained
 hi def link ponyErrUserMethod   Error
-syn match   ponyUserMethod      /\v[_a-zA-Z]\w*/ contained contains=ponyErrUserMethod
+syn match   ponyUserMethod      /\v[_a-zA-Z]\w*/ contained contains=ponyErrUserMethod nextgroup=ponyMethodArguments skipwhite skipempty
 hi def link ponyUserMethod      Function
-syn match   ponyForeignFunction /\v[_a-zA-Z]\w*/ contained nextgroup=ponyBracketTL skipwhite skipempty
+syn match   ponyForeignFunction /\v[_a-zA-Z]\w*/ contained nextgroup=ponyBracketT skipwhite skipempty
 hi def link ponyForeignFunction Macro
 
 syn keyword ponyBoolean         true false
 hi def link ponyBoolean         Boolean
 
-syn match   ponyBracketTL       /[[(]/ contained nextgroup=@ponyKeyword,@ponyType2 skipwhite skipempty
-syn match   ponyBracketTR       /[)\]]/ contained nextgroup=ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
-syn match   ponyBracket         /[{[()\]}]/
+syn region  ponyMethodArguments matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyKeyword,ponyNormal,ponyBracketT,ponySymbol
 
-syn cluster ponyBracketT        contains=ponyBracketTL,ponyBracketTR
+syn region  ponyBracketT        matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyKeyword,@ponyType2,ponyBracketT nextgroup=ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
+syn region  ponyBracketT        matchgroup=ponyBracket start=/\[/ end=/\]/ contained contains=@ponyKeyword,@ponyType2,ponyBracketT nextgroup=ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
+
+syn match   ponyBracket         /[{[()\]}]/
 
 syn match   ponyKwRcapSuffix    /[!^]/ nextgroup=ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
 hi def link ponyKwRcapSuffix    StorageClass
 
-syn match   ponyTypeOperator    /\v\&|\|%(.*\=\>)@!/ contained nextgroup=ponyBracketTL,@ponyKeyword,@ponyType2 skipwhite skipempty
+syn match   ponyTypeOperator    /\v\&|\|%(.*\=\>)@!/ contained nextgroup=ponyBracketT,@ponyKeyword,@ponyType2 skipwhite skipempty
 " XXX: may be an argument separator
 syn match   ponyTypeOperator    /,/ contained nextgroup=ponyBracketTL,@ponyKeyword,@ponyType skipwhite skipempty
 hi def link ponyTypeOperator    Operator
+
 syn match   ponyNumberOperator  /==\|!=\|<<\|>>\|<=\|>=\|[+\-*/%<>]/
 hi def link ponyNumberOperator  Operator
-syn keyword ponyKwOperatorT     is contained nextgroup=ponyBracketTL,@ponyKeyword,@ponyType2 skipwhite skipempty
+
+syn keyword ponyKwOperatorT     is contained nextgroup=ponyBracketT,@ponyKeyword,@ponyType2 skipwhite skipempty
 hi def link ponyKwOperatorT     Operator
-syn keyword ponyKwOperator      as nextgroup=ponyBracketTL,@ponyKeyword,@ponyType2 skipwhite skipempty
+
+syn keyword ponyKwOperator      as nextgroup=ponyBracketT,@ponyKeyword,@ponyType2 skipwhite skipempty
 syn keyword ponyKwOperator      and or xor not is isnt consume addressof digestof
 hi def link ponyKwOperator      Operator
 
 syn match   ponySymbol          /=>\|->\|\.\{3}\|[?#]/
 syn match   ponySymbol          /@/ nextgroup=ponyForeignFunction skipwhite skipempty
-syn match   ponySymbol          /:/ nextgroup=@ponyKeyword,@ponyType2,ponyBracketTL skipwhite skipempty
+syn match   ponySymbol          /:/ nextgroup=@ponyKeyword,@ponyType2,ponyBracketT skipwhite skipempty
 hi def link ponySymbol          Special
 
 " $scripts/gen_id.sh $packages/builtin
@@ -105,7 +109,7 @@ syn keyword ponyBuiltinType     AmbientAuth Any Array ArrayKeys ArrayPairs
                           \     SourceLoc StdStream Stdin StdinNotify String
                           \     StringBytes StringRunes Stringable U128 U16
                           \     U32 U64 U8 ULong USize Unsigned
-                          \     nextgroup=ponyTypeOperator,ponyKwOperatorT,@ponyBracketT skipwhite skipempty
+                          \     nextgroup=ponyTypeOperator,ponyKwOperatorT,ponyBracketT skipwhite skipempty
 hi def link ponyBuiltinType     Type
 
 syn keyword ponyKwControl       end else do then elseif match while for in repeat until
