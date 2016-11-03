@@ -21,8 +21,8 @@ hi def link ponyErrPrime        Error
 syn match   ponyErrNumGroup     /__\+/ contained
 hi def link ponyErrNumGroup     Error
 
-syn match   ponyErrIntDec       /\v(%(\d+_*)+)@<=\./
-syn match   ponyPeriod          /\./ contained
+syn match   ponyPeriodComma     /[.,]/
+hi def link ponyPeriodComma     Operator
 
 syn match   ponyInteger         /\v%(\d+_*)+/ contains=ponyErrNumGroup
 syn match   ponyErrIntDec       /\v(0[xX])@<=[_.g-zG-Z]/
@@ -39,9 +39,6 @@ hi def link ponyInteger         Number
 syn match   ponyFloat           /\v%(\d+_*)+[eE][-+]?%(\d+_*)+/ contains=ponyErrNumGroup
 syn match   ponyFloat           /\v%(\d+_*)+\.%(\d+_*)+%([eE][-+]?%(\d+_*)+)?/ contains=ponyErrNumGroup
 hi def link ponyFloat           Float
-
-" for ponyErrIntDec
-syn match   ponyNormal          /\v_?[_a-z]\w*'?/ nextgroup=ponyPeriod
 
 syn match   ponyErrUserVariable /\v_>|<%([^_a-z]|_[^a-z])/ contained
 hi def link ponyErrUserVariable Error
