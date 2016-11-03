@@ -130,6 +130,9 @@ hi def link ponyKwField         Keyword
 syn keyword ponyKwUse           use nextgroup=ponyString,@ponyKeyword,ponyUserPackage skipwhite skipempty
 hi def link ponyKwUse           Include
 
+syn keyword ponyKwWhere         where
+hi def link ponyKwWhere         Keyword
+
 syn keyword ponyKwTypedef       type nextgroup=@ponyKeyword,@ponyType2 skipwhite skipempty
 hi def link ponyKwTypedef       Typedef
 
@@ -145,7 +148,7 @@ hi def link ponyKwFnCapability  StorageClass
 syn keyword ponyKwFunction      new be fun nextgroup=ponyKwFnCapability,@ponyKeyword,ponyUserMethod skipwhite skipempty
 hi def link ponyKwFunction      Keyword
 
-syn cluster ponyKeyword         contains=ponyKwClass,ponyKwCapability,ponyKwTypedef,ponyKwUse,ponyKwFunction,ponyKwField,ponyKwAtom,ponyKwControl,ponyKwOperator,ponyBoolean,ponyBuiltinType
+syn cluster ponyKeyword         contains=ponyKwClass,ponyKwCapability,ponyKwTypedef,ponyKwWhere,ponyKwUse,ponyKwFunction,ponyKwField,ponyKwAtom,ponyKwControl,ponyKwOperator,ponyBoolean,ponyBuiltinType
 syn cluster ponyType            contains=ponyBuiltinType,ponyUserType
 syn cluster ponyType2           contains=ponyBuiltinType,ponyUserType2
 syn cluster ponyValue           contains=ponyDocumentString,ponyString,ponyCharacter,ponyBoolean,ponyFloat,ponyInteger,ponyArgument
