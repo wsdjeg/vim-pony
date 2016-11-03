@@ -67,8 +67,8 @@ syn match   ponyDefaultAssign   /=/ contained nextgroup=@ponyValue skipwhite ski
 
 syn region  ponyMethodArguments matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyComments,@ponyKeyword,ponyBracketT,ponySymbol,ponyPeriodComma,ponyDefaultAssign
 
-syn region  ponyBracketT        matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyComments,@ponyKeyword,@ponyType2,ponyBracketT,ponySymbol nextgroup=ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
-syn region  ponyBracketT        matchgroup=ponyBracket start=/\[/ end=/\]/ contained contains=@ponyComments,@ponyKeyword,@ponyType2,ponyBracketT,ponySymbol nextgroup=ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
+syn region  ponyBracketT        matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyComments,@ponyKeyword,@ponyType2,ponyBracketT,ponySymbol,ponyPeriodComma nextgroup=ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
+syn region  ponyBracketT        matchgroup=ponyBracket start=/\[/ end=/\]/ contained contains=@ponyComments,@ponyKeyword,@ponyType2,ponyBracketT,ponySymbol,ponyPeriodComma nextgroup=ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
 
 syn region  ponyArgument        matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyValue,ponyPeriodComma
 
@@ -78,8 +78,6 @@ syn match   ponyKwRcapSuffix    /[!^]/ nextgroup=ponyTypeOperator,ponyKwOperator
 hi def link ponyKwRcapSuffix    StorageClass
 
 syn match   ponyTypeOperator    /\v\&|\|%(.*\=\>)@!/ contained nextgroup=ponyBracketT,@ponyKeyword,@ponyType2 skipwhite skipempty
-" XXX: may be an argument separator
-syn match   ponyTypeOperator    /,/ contained nextgroup=ponyBracketTL,@ponyKeyword,@ponyType skipwhite skipempty
 hi def link ponyTypeOperator    Operator
 
 syn match   ponyNumberOperator  /==\|!=\|<<\|>>\|<=\|>=\|[+\-*/%<>]/
