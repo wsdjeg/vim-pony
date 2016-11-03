@@ -55,7 +55,7 @@ syn match   ponyErrUserType     /\v_>|<%([^_A-Z]|_[^A-Z])/ contained
 hi def link ponyErrUserType     Error
 " XXX: ponyTypeOperator:, no check: fun work(job: String, done: Bool)
 syn match   ponyUserType2       /\v[_a-zA-Z]\w*/ contained contains=ponyErrUserType nextgroup=ponyTypeOperator,ponyKwOperatorT,ponyBracketT skipwhite skipempty
-syn match   ponyUserType        /\v_?[A-Z]\w*/ contains=ponyErrUserType
+syn match   ponyUserType        /\v_?[A-Z]\w*/ contained contains=ponyErrUserType nextgroup=ponyTypeOperator,ponyKwOperatorT,ponyBracketT skipwhite skipempty
 syn match   ponyErrUserMethod   /\v_>|<%([^_a-z]|_[^a-z])/ contained
 hi def link ponyErrUserMethod   Error
 syn match   ponyUserMethod      /\v[_a-zA-Z]\w*/ contained contains=ponyErrUserMethod nextgroup=ponyMethodArguments skipwhite skipempty
@@ -68,8 +68,8 @@ hi def link ponyBoolean         Boolean
 
 syn region  ponyMethodArguments matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyKeyword,ponyNormal,ponyBracketT,ponySymbol
 
-syn region  ponyBracketT        matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyKeyword,@ponyType2,ponyBracketT nextgroup=ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
-syn region  ponyBracketT        matchgroup=ponyBracket start=/\[/ end=/\]/ contained contains=@ponyKeyword,@ponyType2,ponyBracketT nextgroup=ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
+syn region  ponyBracketT        matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyKeyword,@ponyType2,ponyBracketT,ponySymbol nextgroup=ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
+syn region  ponyBracketT        matchgroup=ponyBracket start=/\[/ end=/\]/ contained contains=@ponyKeyword,@ponyType2,ponyBracketT,ponySymbol nextgroup=ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
 
 syn match   ponyBracket         /[{[()\]}]/
 
