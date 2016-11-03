@@ -1,7 +1,7 @@
 " Vim syntax file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2016 November 3
+" Last Change:  2016 November 4
 
 if exists('b:current_syntax')
   finish
@@ -54,8 +54,8 @@ hi def link ponyUserPackage     Identifier
 syn match   ponyErrUserType     /\v_>|<%([^_A-Z]|_[^A-Z])/ contained
 hi def link ponyErrUserType     Error
 " XXX: ponyTypeOperator:, no check: fun work(job: String, done: Bool)
-syn match   ponyUserType2       /\v[_a-zA-Z]\w*/ contained contains=ponyErrUserType nextgroup=ponyTypeOperator,ponyKwOperatorT,ponyBracketT skipwhite skipempty
-syn match   ponyUserType        /\v_?[A-Z]\w*/ contained contains=ponyErrUserType nextgroup=ponyTypeOperator,ponyKwOperatorT,ponyBracketT skipwhite skipempty
+syn match   ponyUserType2       /\v[_a-zA-Z]\w*/ contained contains=ponyErrUserType nextgroup=ponyArgument,ponyTypeOperator,ponyKwOperatorT,ponyBracketT skipwhite skipempty
+syn match   ponyUserType        /\v_?[A-Z]\w*/ contained contains=ponyErrUserType nextgroup=ponyArgument,ponyTypeOperator,ponyKwOperatorT,ponyBracketT skipwhite skipempty
 syn match   ponyErrUserMethod   /\v_>|<%([^_a-z]|_[^a-z])/ contained
 hi def link ponyErrUserMethod   Error
 syn match   ponyUserMethod      /\v[_a-zA-Z]\w*/ contained contains=ponyErrUserMethod nextgroup=ponyMethodArguments skipwhite skipempty
@@ -66,10 +66,14 @@ hi def link ponyForeignFunction Macro
 syn keyword ponyBoolean         true false
 hi def link ponyBoolean         Boolean
 
-syn region  ponyMethodArguments matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyKeyword,ponyNormal,ponyBracketT,ponySymbol
+syn match   ponyDefaultAssign   /=/ contained nextgroup=@ponyValue skipwhite skipempty
 
-syn region  ponyBracketT        matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyKeyword,@ponyType2,ponyBracketT,ponySymbol nextgroup=ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
-syn region  ponyBracketT        matchgroup=ponyBracket start=/\[/ end=/\]/ contained contains=@ponyKeyword,@ponyType2,ponyBracketT,ponySymbol nextgroup=ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
+syn region  ponyMethodArguments matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyComments,@ponyKeyword,ponyBracketT,ponyTypeOperator,ponySymbol,ponyDefaultAssign
+
+syn region  ponyBracketT        matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyComments,@ponyKeyword,@ponyType2,ponyBracketT,ponySymbol nextgroup=ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
+syn region  ponyBracketT        matchgroup=ponyBracket start=/\[/ end=/\]/ contained contains=@ponyComments,@ponyKeyword,@ponyType2,ponyBracketT,ponySymbol nextgroup=ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
+
+syn region  ponyArgument        matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyValue
 
 syn match   ponyBracket         /[{[()\]}]/
 
@@ -109,7 +113,7 @@ syn keyword ponyBuiltinType     AmbientAuth Any Array ArrayKeys ArrayPairs
                           \     SourceLoc StdStream Stdin StdinNotify String
                           \     StringBytes StringRunes Stringable U128 U16
                           \     U32 U64 U8 ULong USize Unsigned
-                          \     nextgroup=ponyTypeOperator,ponyKwOperatorT,ponyBracketT skipwhite skipempty
+                          \     nextgroup=ponyArgument,ponyTypeOperator,ponyKwOperatorT,ponyBracketT skipwhite skipempty
 hi def link ponyBuiltinType     Type
 
 syn keyword ponyKwControl       end else do then elseif match while for in repeat until
@@ -149,6 +153,8 @@ hi def link ponyKwFunction      Keyword
 syn cluster ponyKeyword         contains=ponyKwClass,ponyKwCapability,ponyKwTypedef,ponyKwUse,ponyKwFunction,ponyKwField,ponyKwAtom,ponyKwControl,ponyKwOperator,ponyBoolean,ponyBuiltinType
 syn cluster ponyType            contains=ponyBuiltinType,ponyUserType
 syn cluster ponyType2           contains=ponyBuiltinType,ponyUserType2
+syn cluster ponyValue           contains=ponyDocumentString,ponyString,ponyCharacter,ponyBoolean,ponyFloat,ponyInteger,ponyArgument
+syn cluster ponyComments        contains=ponyNestedComment,ponyComment
 
 syn match   ponyErrEscape       /\\\_.\?\_s*/ contained
 hi def link ponyErrEscape       Error
