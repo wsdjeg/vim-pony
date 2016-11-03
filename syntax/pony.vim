@@ -65,12 +65,12 @@ hi def link ponyBoolean         Boolean
 
 syn match   ponyDefaultAssign   /=/ contained nextgroup=@ponyValue skipwhite skipempty
 
-syn region  ponyMethodArguments matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyComments,@ponyKeyword,ponyBracketT,ponyTypeOperator,ponySymbol,ponyDefaultAssign
+syn region  ponyMethodArguments matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyComments,@ponyKeyword,ponyBracketT,ponySymbol,ponyPeriodComma,ponyDefaultAssign
 
 syn region  ponyBracketT        matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyComments,@ponyKeyword,@ponyType2,ponyBracketT,ponySymbol nextgroup=ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
 syn region  ponyBracketT        matchgroup=ponyBracket start=/\[/ end=/\]/ contained contains=@ponyComments,@ponyKeyword,@ponyType2,ponyBracketT,ponySymbol nextgroup=ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
 
-syn region  ponyArgument        matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyValue
+syn region  ponyArgument        matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyValue,ponyPeriodComma
 
 syn match   ponyBracket         /[{[()\]}]/
 
