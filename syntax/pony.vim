@@ -92,26 +92,19 @@ syn match   ponySymbol          /@/ nextgroup=ponyForeignFunction skipwhite skip
 syn match   ponySymbol          /:/ nextgroup=@ponyKeyword,@ponyType2,ponyBracketTL skipwhite skipempty
 hi def link ponySymbol          Special
 
-syn keyword ponyBuiltinTrait    Integer Real FloatingPoint FormatSpec PrefixSpec nextgroup=ponyTypeOperator,ponyKwOperatorT,@ponyBracketT skipwhite skipempty
-hi def link ponyBuiltinTrait    SpecialComment
-
-syn keyword ponyBuiltinType     None Any Env Bool Number AmbientAuth F32 F64 Float
-                          \     I8 I16 I32 I64 I128 ILong ISize Signed
-                          \     U8 U16 U32 U64 U128 ULong USize Unsigned
-                          \     String StringBytes StringRunes ArrayValues ByteSeqIter
-                          \     OutStream StdStream Array ArrayPairs ArrayKeys
-                          \     Comparable Seq Iterator ReadSeq ReadElement ByteSeq
-                          \     DisposableActor Compare Less Equal Greator HasEq Equatable
-                          \     AsioEvent AsioEventID AsioEventNotify Stdin StdinNotify
-                          \     FormatGeneralLarge Pointer MaybePointer Platform SourceLoc
-                          \     FormatExpLarge FormatFix FormatFixLarge FormatGeneral
-                          \     FormatDefaultNumber FormatFloat FormatSettingsFloat FormatExp
-                          \     FormatHexSmall FormatHexSmallBare FormatInt FormatSettingsInt
-                          \     FormatOctal FormatOctalBare FormatHex FormatHexBare
-                          \     PrefixDefault FormatUTF32 FormatBinary FormatBinaryBare
-                          \     FormatSettingsDefault FormatSettingsHolder FormatDefault
-                          \     PrefixSpace PrefixSign PrefixNumber FormatSettings
-                          \     Creatable Stringable Align AlignLeft AlignRight AlignCenter
+" $scripts/gen_id.sh $packages/builtin
+syn keyword ponyBuiltinType     AmbientAuth Any Array ArrayKeys ArrayPairs
+                          \     ArrayValues AsioEvent AsioEventID
+                          \     AsioEventNotify Bool ByteSeq ByteSeqIter
+                          \     Comparable Compare DisposableActor
+                          \     DoNotOptimise Env Equal Equatable F32 F64
+                          \     Float FloatingPoint Greater HasEq I128 I16 I32
+                          \     I64 I8 ILong ISize Int Integer Iterator Less
+                          \     MaybePointer None Number OutStream Platform
+                          \     Pointer ReadElement ReadSeq Real Seq Signed
+                          \     SourceLoc StdStream Stdin StdinNotify String
+                          \     StringBytes StringRunes Stringable U128 U16
+                          \     U32 U64 U8 ULong USize Unsigned
                           \     nextgroup=ponyTypeOperator,ponyKwOperatorT,@ponyBracketT skipwhite skipempty
 hi def link ponyBuiltinType     Type
 
@@ -149,9 +142,9 @@ hi def link ponyKwFnCapability  StorageClass
 syn keyword ponyKwFunction      new be fun nextgroup=ponyKwFnCapability,@ponyKeyword,ponyUserMethod skipwhite skipempty
 hi def link ponyKwFunction      Keyword
 
-syn cluster ponyKeyword         contains=ponyKwClass,ponyKwCapability,ponyKwTypedef,ponyKwUse,ponyKwFunction,ponyKwField,ponyKwAtom,ponyKwControl,ponyKwOperator,ponyBoolean,ponyBuiltinType,ponyBuiltinTrait
-syn cluster ponyType            contains=ponyBuiltinTrait,ponyBuiltinType,ponyUserType
-syn cluster ponyType2           contains=ponyBuiltinTrait,ponyBuiltinType,ponyUserType2
+syn cluster ponyKeyword         contains=ponyKwClass,ponyKwCapability,ponyKwTypedef,ponyKwUse,ponyKwFunction,ponyKwField,ponyKwAtom,ponyKwControl,ponyKwOperator,ponyBoolean,ponyBuiltinType
+syn cluster ponyType            contains=ponyBuiltinType,ponyUserType
+syn cluster ponyType2           contains=ponyBuiltinType,ponyUserType2
 
 syn match   ponyErrEscape       /\\\_.\?\_s*/ contained
 hi def link ponyErrEscape       Error
