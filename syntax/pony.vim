@@ -21,7 +21,7 @@ hi def link ponyErrPrime        Error
 syn match   ponyErrNumGroup     /__\+/ contained
 hi def link ponyErrNumGroup     Error
 
-syn match   ponyPeriodComma     /[.,]/
+syn match   ponyPeriodComma     /[.,~]/
 hi def link ponyPeriodComma     Operator
 
 syn match   ponyBracket         /[{[()\]}]/
