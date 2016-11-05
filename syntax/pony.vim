@@ -26,6 +26,8 @@ hi def link ponyPeriodComma     Operator
 
 syn match   ponyBracket         /[{[()\]}]/
 
+syn match   ponyNormal          /\v_?[_a-z]\w*'?/ nextgroup=ponyPeriodComma
+
 syn match   ponyInteger         /\v%(\d+_*)+/ contains=ponyErrNumGroup
 syn match   ponyErrIntDec       /\v(0[xX])@<=[_.g-zG-Z]/
 syn match   ponyErrIntHex       /[.g-zG-Z]/ contained
