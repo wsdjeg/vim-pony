@@ -1,7 +1,7 @@
 " Vim syntax file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2016 November 4
+" Last Change:  2016 November 11
 
 if exists('b:current_syntax')
   finish
@@ -81,8 +81,8 @@ syn cluster ponyBracketT        contains=ponyBracketT1,ponyBracketT2,ponyBracket
 " |(var a, var b) = (x, x)
 syn region  ponyArgument        matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyKeyword,@ponyValue,ponyPeriodComma
 
-syn match   ponyKwRcapSuffix    /[!^]/ nextgroup=ponyTypeOperator,ponyKwOperatorT,ponyMethodArguments skipwhite skipempty
-hi def link ponyKwRcapSuffix    StorageClass
+syn match   ponyTypeSuffix      /[!^]/ nextgroup=ponyTypeOperator,ponyKwOperatorT,ponyMethodArguments skipwhite skipempty
+hi def link ponyTypeSuffix      StorageClass
 
 syn match   ponyTypeOperator    /\v\&|\|%(.*\=\>)@!/ contained nextgroup=@ponyBracketT,@ponyKeyword,@ponyType2 skipwhite skipempty
 hi def link ponyTypeOperator    Operator
@@ -144,8 +144,8 @@ hi def link ponyKwWhere         Keyword
 syn keyword ponyKwTypedef       type nextgroup=@ponyKeyword,@ponyType2 skipwhite skipempty
 hi def link ponyKwTypedef       Typedef
 
-syn match   ponyKwCapability    /\v#%(read|send|share|alias|any)>/ nextgroup=ponyKwRcapSuffix,ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
-syn keyword ponyKwCapability    ref val tag iso box trn nextgroup=ponyKwRcapSuffix,ponyTypeOperator,ponyKwOperatorT,ponyMethodArguments skipwhite skipempty
+syn match   ponyKwCapability    /\v#%(read|send|share|alias|any)>/ nextgroup=ponyTypeSuffix,ponyTypeOperator,ponyKwOperatorT skipwhite skipempty
+syn keyword ponyKwCapability    ref val tag iso box trn nextgroup=ponyTypeSuffix,ponyTypeOperator,ponyKwOperatorT,ponyMethodArguments skipwhite skipempty
 hi def link ponyKwCapability    StorageClass
 
 syn keyword ponyKwClass         actor class struct primitive trait interface nextgroup=@ponyKeyword,@ponyType2 skipwhite skipempty
