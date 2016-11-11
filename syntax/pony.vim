@@ -54,8 +54,8 @@ syn match   ponyUserPackage     /\v[_a-zA-Z]\w*/ contained contains=ponyErrUserP
 hi def link ponyUserPackage     Identifier
 syn match   ponyErrUserType     /\v_>|<%([^_A-Z]|_[^A-Z])/ contained
 hi def link ponyErrUserType     Error
-syn match   ponyUserType2       /\v[_a-zA-Z]\w*/ contained contains=ponyErrUserType nextgroup=ponyTypeSuffix,ponyKwOperatorT,ponyArgument,ponyBracketT2 skipwhite
-syn match   ponyUserType        /\v_?[A-Z]\w*/ contained contains=ponyErrUserType nextgroup=ponyTypeSuffix,ponyKwOperatorT,ponyArgument,ponyBracketT2 skipwhite
+syn match   ponyUserType2       /\v[_a-zA-Z]\w*/ contained contains=ponyErrUserType nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT,ponyArgument,ponyBracketT2 skipwhite
+syn match   ponyUserType        /\v_?[A-Z]\w*/ contained contains=ponyErrUserType nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT,ponyArgument,ponyBracketT2 skipwhite
 syn match   ponyErrUserMethod   /\v_>|<%([^_a-z]|_[^a-z])/ contained
 hi def link ponyErrUserMethod   Error
 syn match   ponyUserMethod      /\v[_a-zA-Z]\w*/ contained contains=ponyErrUserMethod nextgroup=ponyMethodArguments skipwhite skipempty
@@ -70,9 +70,9 @@ syn match   ponyDefaultAssign   /=/ contained nextgroup=@ponyValue skipwhite ski
 
 syn region  ponyMethodArguments matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyComments,@ponyKeyword,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma,ponyDefaultAssign
 
-syn region  ponyBracketT1       matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyComments,@ponyKeyword,@ponyType2,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma nextgroup=ponyTypeSuffix,ponyKwOperatorT skipwhite skipempty
-syn region  ponyBracketT2       matchgroup=ponyBracket start=/\[/ end=/\]/ contained contains=@ponyComments,@ponyKeyword,@ponyType2,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma nextgroup=ponyTypeSuffix,ponyKwOperatorT skipwhite skipempty
-syn region  ponyBracketT3       matchgroup=ponyBracket start=/{/ end=/}/ contained contains=@ponyComments,@ponyKeyword,@ponyType2,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma nextgroup=ponyTypeSuffix,ponyKwOperatorT skipwhite skipempty
+syn region  ponyBracketT1       matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyComments,@ponyKeyword,@ponyType2,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT skipwhite skipempty
+syn region  ponyBracketT2       matchgroup=ponyBracket start=/\[/ end=/\]/ contained contains=@ponyComments,@ponyKeyword,@ponyType2,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT skipwhite skipempty
+syn region  ponyBracketT3       matchgroup=ponyBracket start=/{/ end=/}/ contained contains=@ponyComments,@ponyKeyword,@ponyType2,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT skipwhite skipempty
 syn cluster ponyBracketT        contains=ponyBracketT\d
 
 syn region  ponyArgument        matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyKeyword,@ponyValue,ponyPeriodComma
@@ -116,7 +116,7 @@ syn keyword ponyBuiltinType     AmbientAuth Any Array ArrayKeys ArrayPairs
                           \     SourceLoc StdStream Stdin StdinNotify String
                           \     StringBytes StringRunes Stringable U128 U16
                           \     U32 U64 U8 ULong USize Unsigned
-                          \     nextgroup=ponyTypeSuffix,ponyKwOperatorT,ponyArgument,ponyBracketT2 skipwhite
+                          \     nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT,ponyArgument,ponyBracketT2 skipwhite
 hi def link ponyBuiltinType     Type
 
 syn keyword ponyKwControl       end else do then elseif match while for in repeat until
@@ -146,8 +146,8 @@ hi def link ponyKwWhere         Keyword
 syn keyword ponyKwTypedef       type nextgroup=@ponyKeyword,@ponyType2 skipwhite skipempty
 hi def link ponyKwTypedef       Typedef
 
-syn match   ponyKwCapability    /\v#%(read|send|share|alias|any)>/ nextgroup=ponyTypeSuffix,ponyKwOperatorT skipwhite
-syn keyword ponyKwCapability    ref val tag iso box trn nextgroup=ponyTypeSuffix,ponyKwOperatorT,ponyMethodArguments skipwhite
+syn match   ponyKwCapability    /\v#%(read|send|share|alias|any)>/ nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT skipwhite
+syn keyword ponyKwCapability    ref val tag iso box trn nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT,ponyMethodArguments skipwhite
 hi def link ponyKwCapability    StorageClass
 
 syn keyword ponyKwClass         actor class struct primitive trait interface nextgroup=@ponyKeyword,@ponyType2 skipwhite skipempty
