@@ -125,9 +125,10 @@ syn keyword ponyKwControl       end else do then elseif match while for in repea
 hi def link ponyKwControl       Keyword
 
 syn match   ponyKwControl       /\<if\>/
-syn match   ponyKwControl       /|/
 syn match   ponyCaseGuard       /\v(\|.{-})@<=<if>(.{-}\=\>)@=/
 hi def link ponyCaseGuard       Keyword
+syn match   ponyKwBranchHead    /|/
+hi def link ponyKwBranchHead    Keyword
 
 syn keyword ponyKwAtom          this nextgroup=ponyTypeOperator2 skipwhite skipempty
 syn keyword ponyKwAtom          object __loc
@@ -158,7 +159,7 @@ hi def link ponyKwFnCapability  StorageClass
 syn keyword ponyKwFunction      new be fun nextgroup=ponyKwFnCapability,@ponyKeyword,ponyUserMethod skipwhite skipempty
 hi def link ponyKwFunction      Keyword
 
-syn cluster ponyKeyword         contains=ponyKw.*,ponyBoolean,ponyBuiltinType remove=ponyKwOperatorT
+syn cluster ponyKeyword         contains=ponyKw.*,ponyBoolean,ponyBuiltinType remove=ponyKwOperatorT,ponyKwFnCapability,ponyKwBranchHead
 syn cluster ponyType            contains=ponyBuiltinType,ponyUserType
 syn cluster ponyType2           contains=ponyBuiltinType,ponyUserType2
 syn cluster ponyValue           contains=ponyDocumentString,ponyString,ponyCharacter,ponyBoolean,ponyFloat,ponyInteger,ponyArgument
