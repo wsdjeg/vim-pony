@@ -84,7 +84,7 @@ syn region  ponyArgument        matchgroup=ponyBracket start=/(/ end=/)/ contain
 syn match   ponyTypeSuffix      /[!^]/ nextgroup=ponyTypeOperator,ponyKwOperatorT,ponyMethodArguments skipwhite skipempty
 hi def link ponyTypeSuffix      StorageClass
 
-syn match   ponyTypeOperator    /\v\&|\|%(.*\=\>)@!/ contained nextgroup=@ponyBracketT,@ponyKeyword,@ponyType2 skipwhite skipempty
+syn match   ponyTypeOperator    /\v\&|\|%(.*\=\>)@!|-\>/ contained nextgroup=@ponyBracketT,@ponyKeyword,@ponyType2 skipwhite skipempty
 hi def link ponyTypeOperator    Operator
 
 syn match   ponyNumberOperator  /==\|!=\|<<\|>>\|<=\|>=\|[+\-*/%<>]/
@@ -97,7 +97,7 @@ syn keyword ponyKwOperator      as nextgroup=@ponyBracketT,@ponyKeyword,@ponyTyp
 syn keyword ponyKwOperator      and or xor not is isnt consume addressof digestof
 hi def link ponyKwOperator      Operator
 
-syn match   ponySymbol          /=>\|->\|\.\{3}\|[?#]/
+syn match   ponySymbol          /=>\|\.\{3}\|[?#]/
 syn match   ponySymbol          /@/ nextgroup=ponyForeignFunction skipwhite skipempty
 syn match   ponySymbol          /:/ nextgroup=@ponyKeyword,@ponyType2,@ponyBracketT skipwhite skipempty
 hi def link ponySymbol          Special
@@ -128,7 +128,8 @@ syn match   ponyKwControl       /|/
 syn match   ponyCaseGuard       /\v(\|.{-})@<=<if>(.{-}\=\>)@=/
 hi def link ponyCaseGuard       Keyword
 
-syn keyword ponyKwAtom          this object __loc
+syn keyword ponyKwAtom          this nextgroup=ponyTypeOperator skipwhite skipempty
+syn keyword ponyKwAtom          object __loc
 syn keyword ponyKwAtom          lambda nextgroup=ponyMethodArguments skipwhite skipempty
 hi def link ponyKwAtom          Keyword
 
