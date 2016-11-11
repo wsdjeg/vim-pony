@@ -68,7 +68,7 @@ hi def link ponyBoolean         Boolean
 
 syn match   ponyDefaultAssign   /=/ contained nextgroup=@ponyValue skipwhite skipempty
 
-syn region  ponyMethodArguments matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyComments,@ponyKeyword,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma,ponyDefaultAssign
+syn region  ponyMethodArguments matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyComments,@ponyKeyword,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma,ponyDefaultAssign nextgroup=ponyArgument skipwhite
 
 syn region  ponyBracketT1       matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyComments,@ponyKeyword,@ponyType2,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT skipwhite skipempty
 syn region  ponyBracketT2       matchgroup=ponyBracket start=/\[/ end=/\]/ contained contains=@ponyComments,@ponyKeyword,@ponyType2,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT skipwhite skipempty
@@ -102,6 +102,10 @@ syn match   ponySymbol          /=>\|\.\{3}\|[?#]/
 syn match   ponySymbol          /@/ nextgroup=ponyForeignFunction skipwhite skipempty
 syn match   ponySymbol          /:/ nextgroup=@ponyKeyword,@ponyType2,@ponyBracketT skipwhite skipempty
 hi def link ponySymbol          Special
+
+syn region  ponyLambda          matchgroup=ponyBracketLambda start=/{/ end=/}/ contains=ponyMethodArguments,@ponyComments,@ponyKeyword,@ponyType2,@ponyTypeOperator,ponySymbol,ponyPeriodComma,ponyLambdaBody
+syn match   ponyLambdaBody      /=>\_.*}/me=e-1 contains=TOP
+hi def link ponyBracketLambda   Special
 
 " $scripts/gen_id.sh $packages/builtin
 syn keyword ponyBuiltinType     AmbientAuth Any Array ArrayKeys ArrayPairs
