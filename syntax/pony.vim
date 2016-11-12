@@ -93,7 +93,7 @@ hi def link ponyTypeOperator2   Operator
 
 syn cluster ponyTypeOperator    contains=ponyTypeOperator\d
 
-syn match   ponyErrOperator     /==\|!=\|<<\|>>\|<=\|>=\|\.>\|[+\-*/%<>~.,]/ contained nextgroup=ponyErrOperator skipwhite
+syn match   ponyErrOperator     /==\|!=\|<<\|>>\|<=\|>=\|[-.]>\|[+*/%<>~.,]/ contained nextgroup=ponyErrOperator skipwhite
 hi def link ponyErrOperator     Error
 
 syn match   ponyObjectOperator  /==\|!=\|<<\|>>\|<=\|>=\|\.>\|[+\-*/%<>~]/ nextgroup=ponyErrOperator skipwhite
