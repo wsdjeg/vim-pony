@@ -1,10 +1,11 @@
        // vim:debug=msg
         type A is (I32 | U32)
-type B is (
+type B is ((
      Good & Bad
         ) |
  Nothing |
   Fine
+  )
   use "collections"
     use time = "time"
 
