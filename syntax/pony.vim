@@ -29,7 +29,7 @@ hi def link ponyPeriodComma     Operator
 
 syn match   ponyBracket         /[{[()\]}]/
 
-syn match   ponyNormal          /\v_?[_a-z]\w*'?/ nextgroup=ponyPeriodComma
+syn match   ponyNormal          /\v_?[_a-z]\w*'?/
 
 syn match   ponyInteger         /\v%(\d+_*)+/ contains=ponyErrNumGroup
 syn match   ponyErrIntDec       /\v(0[xX])@<=[_.g-zG-Z]/
@@ -61,9 +61,9 @@ syn match   ponyUserType2       /\v[_a-zA-Z]\w*/ contained contains=ponyErrUserT
 syn match   ponyUserType        /\v_?[A-Z]\w*/ contains=ponyErrUserType nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT,ponyArgument skipwhite
 syn match   ponyErrUserMethod   /\v_>|<%([^_a-z]|_[^a-z])/ contained
 hi def link ponyErrUserMethod   Error
-syn match   ponyUserMethod      /\v[_a-zA-Z]\w*/ contained contains=ponyErrUserMethod nextgroup=ponyMethodArguments skipwhite skipempty
+syn match   ponyUserMethod      /\v[_a-zA-Z]\w*/ contained contains=ponyErrUserMethod nextgroup=ponyMethodArguments,ponyBracketT2 skipwhite skipempty
 hi def link ponyUserMethod      Function
-syn match   ponyForeignFunction /\v[_a-zA-Z]\w*/ contained contains=ponyErrFFI nextgroup=ponyBracketT2 skipwhite
+syn match   ponyForeignFunction /\v[_a-zA-Z]\w*/ contained contains=ponyErrFFI
 hi def link ponyForeignFunction Macro
 
 syn keyword ponyBoolean         true false
@@ -74,9 +74,11 @@ syn match   ponyDefaultAssign   /=/ contained nextgroup=@ponyValue skipwhite ski
 syn region  ponyMethodArguments matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyComments,@ponyKeyword,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma,ponyDefaultAssign nextgroup=ponyArgument skipwhite
 
 syn region  ponyBracketT1       matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyComments,@ponyKeyword,@ponyType2,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT skipwhite
-syn region  ponyBracketT2       matchgroup=ponyBracket start=/\[/ end=/\]/ contains=@ponyComments,@ponyKeyword,@ponyType2,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT,ponyArgument skipwhite
+syn region  ponyBracketT2       matchgroup=ponyBracket start=/\[/ end=/\]/ contained contains=@ponyComments,@ponyKeyword,@ponyType2,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT,ponyMethodArguments skipwhite
 syn region  ponyBracketT3       matchgroup=ponyBracket start=/{/ end=/}/ contained contains=@ponyComments,@ponyKeyword,@ponyType2,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT skipwhite
 syn cluster ponyBracketT        contains=ponyBracketT\d
+
+syn region  ponyGeneric         matchgroup=ponyBracket start=/\[/ end=/\]/ contains=@ponyComments,@ponyKeyword,@ponyType2,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma nextgroup=ponyArgument skipwhite
 
 syn region  ponyArgument        matchgroup=ponyBracket start=/(/ end=/)/ contained contains=TOP nextgroup=ponyArgument skipwhite
 
