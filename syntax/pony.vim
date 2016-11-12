@@ -104,7 +104,7 @@ syn match   ponySymbol          /:/ nextgroup=@ponyKeyword,@ponyType2,@ponyBrack
 hi def link ponySymbol          Special
 
 syn region  ponyLambda          matchgroup=ponyBracketLambda start=/{/ end=/}/ contains=ponyMethodArguments,@ponyComments,@ponyKeyword,@ponyType2,@ponyTypeOperator,ponySymbol,ponyPeriodComma,ponyLambdaBody nextgroup=ponyArgument skipwhite
-syn match   ponyLambdaBody      /=>\_.*}/me=e-1 contains=TOP
+syn match   ponyLambdaBody      /=>\_.*}/me=e-1 contained contains=TOP
 hi def link ponyBracketLambda   Special
 
 " $scripts/gen_id.sh $packages/builtin
