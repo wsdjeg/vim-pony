@@ -1,7 +1,7 @@
 " Vim plugin file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2016 November 3
+" Last Change:  2016 November 12
 
 " TODO: Make sure echomsg is off for release.
 let s:cpo_save = &cpo
@@ -358,7 +358,7 @@ function! s:IsContinued(lnum)
   "  |     2
   return !s:InCommentOrLiteral(a:lnum, l:width)
         \ && (l:line =~# '\v<%(and|or|xor|is|isnt|as|not|consume|addressof|digestof)\s*$'
-        \ || l:line =~# '\v%([=\-]\>|[<!=>]\=|\<\<|\>\>|[+\-*/%<>,|:@])\s*$'
+        \ || l:line =~# '\v%([=\-.]\>|[<!=>]\=|\<\<|\>\>|[+\-*/%<>.,|:@~])\s*$'
         \ )
 endfunction
 
