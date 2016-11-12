@@ -73,22 +73,22 @@ syn match   ponyDefaultAssign   /=/ contained nextgroup=@ponyValue skipwhite ski
 
 syn region  ponyMethodArguments matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyComments,@ponyKeyword,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma,ponyDefaultAssign nextgroup=ponyArgument skipwhite
 
-syn region  ponyBracketT1       matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyComments,@ponyKeyword,@ponyType2,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT skipwhite
-syn region  ponyBracketT2       matchgroup=ponyBracket start=/\[/ end=/\]/ contained contains=@ponyComments,@ponyKeyword,@ponyType2,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT,ponyMethodArguments skipwhite
-syn region  ponyBracketT3       matchgroup=ponyBracket start=/{/ end=/}/ contained contains=@ponyComments,@ponyKeyword,@ponyType2,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT skipwhite
+syn region  ponyBracketT1       matchgroup=ponyBracket start=/(/ end=/)/ contained contains=@ponyComments,@ponyKeyword,@ponyType,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT skipwhite
+syn region  ponyBracketT2       matchgroup=ponyBracket start=/\[/ end=/\]/ contained contains=@ponyComments,@ponyKeyword,@ponyType,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT,ponyMethodArguments skipwhite
+syn region  ponyBracketT3       matchgroup=ponyBracket start=/{/ end=/}/ contained contains=@ponyComments,@ponyKeyword,@ponyType,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT skipwhite
 syn cluster ponyBracketT        contains=ponyBracketT\d
 
-syn region  ponyGeneric         matchgroup=ponyBracket start=/\[/ end=/\]/ contains=@ponyComments,@ponyKeyword,@ponyType2,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma nextgroup=ponyArgument skipwhite
+syn region  ponyGeneric         matchgroup=ponyBracket start=/\[/ end=/\]/ contains=@ponyComments,@ponyKeyword,@ponyType,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma nextgroup=ponyArgument skipwhite
 
 syn region  ponyArgument        matchgroup=ponyBracket start=/(/ end=/)/ contained contains=TOP nextgroup=ponyArgument skipwhite
 
 syn match   ponyTypeSuffix      /[!^]/ contained nextgroup=ponyMethodArguments,ponyKwOperatorT skipwhite
 hi def link ponyTypeSuffix      StorageClass
 
-syn match   ponyTypeOperator1   /[&|]/ contained nextgroup=@ponyBracketT,@ponyKeyword,@ponyType2 skipwhite skipempty
+syn match   ponyTypeOperator1   /[&|]/ contained nextgroup=@ponyBracketT,@ponyKeyword,@ponyType skipwhite skipempty
 hi def link ponyTypeOperator1   Operator
 
-syn match   ponyTypeOperator2   /->/ contained nextgroup=@ponyBracketT,@ponyKeyword,@ponyType2 skipwhite skipempty
+syn match   ponyTypeOperator2   /->/ contained nextgroup=@ponyBracketT,@ponyKeyword,@ponyType skipwhite skipempty
 hi def link ponyTypeOperator2   Operator
 
 syn cluster ponyTypeOperator    contains=ponyTypeOperator\d
@@ -99,19 +99,19 @@ hi def link ponyErrOperator     Error
 syn match   ponyObjectOperator  /==\|!=\|<<\|>>\|<=\|>=\|\.>\|[+\-*/%<>~]/ nextgroup=ponyErrOperator skipwhite
 hi def link ponyObjectOperator  Operator
 
-syn keyword ponyKwOperatorT     is contained nextgroup=@ponyBracketT,@ponyKeyword,@ponyType2 skipwhite skipempty
+syn keyword ponyKwOperatorT     is contained nextgroup=@ponyBracketT,@ponyKeyword,@ponyType skipwhite skipempty
 hi def link ponyKwOperatorT     Operator
 
-syn keyword ponyKwOperator      as nextgroup=@ponyBracketT,@ponyKeyword,@ponyType2 skipwhite skipempty
+syn keyword ponyKwOperator      as nextgroup=@ponyBracketT,@ponyKeyword,@ponyType skipwhite skipempty
 syn keyword ponyKwOperator      and or xor not is isnt consume addressof digestof
 hi def link ponyKwOperator      Operator
 
 syn match   ponySymbol          /=>\|\.\{3}\|[?#]/
 syn match   ponySymbol          /@/ nextgroup=ponyForeignFunction skipwhite skipempty
-syn match   ponySymbol          /:/ nextgroup=@ponyKeyword,@ponyType2,@ponyBracketT skipwhite skipempty
+syn match   ponySymbol          /:/ nextgroup=@ponyKeyword,@ponyType,@ponyBracketT skipwhite skipempty
 hi def link ponySymbol          Special
 
-syn region  ponyLambda          matchgroup=ponyBracketLambda start=/{/ end=/}/ contains=ponyMethodArguments,@ponyComments,@ponyKeyword,@ponyType2,@ponyTypeOperator,ponySymbol,ponyPeriodComma,ponyLambdaBody nextgroup=ponyArgument skipwhite
+syn region  ponyLambda          matchgroup=ponyBracketLambda start=/{/ end=/}/ contains=ponyMethodArguments,@ponyComments,@ponyKeyword,@ponyType,@ponyTypeOperator,ponySymbol,ponyPeriodComma,ponyLambdaBody nextgroup=ponyArgument skipwhite
 syn match   ponyLambdaBody      /=>\_.*}/me=e-1 contained contains=TOP
 hi def link ponyBracketLambda   Special
 
@@ -173,7 +173,7 @@ syn keyword ponyKwFunction      new be fun nextgroup=ponyKwFnCapability,@ponyKey
 hi def link ponyKwFunction      Keyword
 
 syn cluster ponyKeyword         contains=ponyKw.*,ponyBoolean,ponyBuiltinType remove=ponyKwOperatorT,ponyKwFnCapability,ponyKwBranchHead
-syn cluster ponyType            contains=ponyBuiltinType,ponyUserType
+syn cluster ponyType            contains=ponyBuiltinType,ponyUserType,ponyNormal
 syn cluster ponyType2           contains=ponyBuiltinType,ponyUserType2
 syn cluster ponyValue           contains=ponyDocumentString,ponyString,ponyCharacter,ponyBoolean,ponyFloat,ponyInteger,@ponyKeyword,@ponyType2,ponyArgument
 syn cluster ponyComments        contains=ponyNestedComment,ponyComment
