@@ -24,7 +24,7 @@ hi def link ponyErrSymbol       Error
 syn match   ponyErrNumGroup     /__\+/ contained
 hi def link ponyErrNumGroup     Error
 
-syn match   ponyPeriodComma     /[.,~]/
+syn match   ponyPeriodComma     /[.,]/ nextgroup=ponyErrOperator skipwhite
 hi def link ponyPeriodComma     Operator
 
 syn match   ponyBracket         /[{[()\]}]/
@@ -93,8 +93,11 @@ hi def link ponyTypeOperator2   Operator
 
 syn cluster ponyTypeOperator    contains=ponyTypeOperator\d
 
-syn match   ponyNumberOperator  /==\|!=\|<<\|>>\|<=\|>=\|[+\-*/%<>]/
-hi def link ponyNumberOperator  Operator
+syn match   ponyErrOperator     /==\|!=\|<<\|>>\|<=\|>=\|\.>\|[+\-*/%<>~.,]/ contained nextgroup=ponyErrOperator skipwhite
+hi def link ponyErrOperator     Error
+
+syn match   ponyObjectOperator  /==\|!=\|<<\|>>\|<=\|>=\|\.>\|[+\-*/%<>~]/ nextgroup=ponyErrOperator skipwhite
+hi def link ponyObjectOperator  Operator
 
 syn keyword ponyKwOperatorT     is contained nextgroup=@ponyBracketT,@ponyKeyword,@ponyType2 skipwhite skipempty
 hi def link ponyKwOperatorT     Operator
