@@ -1,7 +1,7 @@
 " Vim syntax file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2016 November 12
+" Last Change:  2016 November 13
 
 if exists('b:current_syntax')
   finish
@@ -131,15 +131,16 @@ syn keyword ponyBuiltinType     AmbientAuth Any Array ArrayKeys ArrayPairs
                           \     nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT,ponyArgument skipwhite
 hi def link ponyBuiltinType     Type
 
-syn keyword ponyKwControl       end else do then elseif match while for in repeat until
-                        \       ifdef try with recover return break continue error
-                        \       compile_intrinsic compile_error
+syn keyword ponyKwControl       end if else do then elseif match while for in
+                        \       repeat until ifdef try with recover return
+                        \       break continue error compile_intrinsic
+                        \       compile_error
 hi def link ponyKwControl       Keyword
 
-syn match   ponyKwControl       /\<if\>/
-syn match   ponyCaseGuard       /\v(\|.{-})@<=<if>(.{-}\=\>)@=/
+syn keyword ponyCaseGuard       if contained containedin=ponyMatchCase
 hi def link ponyCaseGuard       Keyword
-syn match   ponyKwBranchHead    /|/
+
+syn region  ponyMatchCase       matchgroup=ponyKwBranchHead start=/|/ matchgroup=ponySymbol end=/=>/ contains=TOP
 hi def link ponyKwBranchHead    Keyword
 
 syn keyword ponyKwAtom          this nextgroup=ponyTypeOperator2 skipwhite skipempty
