@@ -26,7 +26,7 @@ hi def link ponyPeriodComma     Operator
 
 syn match   ponyBracket         /[{[()\]}]/
 
-syn match   ponyNormal          /\v_?[_a-z]\w*'?/
+syn match   ponyNormal          /\v_?[_a-z]\w*'?/ nextgroup=ponyGeneric skipwhite
 
 syn match   ponyInteger         /\v%(\d+_*)+/ contains=ponyErrNumGroup
 syn match   ponyErrIntDec       /\v(0[xX])@<=[_.g-zG-Z]/
@@ -54,13 +54,13 @@ syn match   ponyUserPackage     /\v[_a-zA-Z]\w*/ contained contains=ponyErrUserP
 hi def link ponyUserPackage     Identifier
 syn match   ponyErrUserType     /\v_>|<%([^_A-Z]|_[^A-Z])/ contained
 hi def link ponyErrUserType     Error
-syn match   ponyUserType2       /\v[_a-zA-Z]\w*/ contained contains=ponyErrUserType nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT,ponyArgument skipwhite
-syn match   ponyUserType        /\v_?[A-Z]\w*/ contains=ponyErrUserType nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT,ponyArgument skipwhite
+syn match   ponyUserType2       /\v[_a-zA-Z]\w*/ contained contains=ponyErrUserType nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT,ponyGeneric,ponyArgument skipwhite
+syn match   ponyUserType        /\v_?[A-Z]\w*/ contains=ponyErrUserType nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT,ponyGeneric,ponyArgument skipwhite
 syn match   ponyErrUserMethod   /\v_>|<%([^_a-z]|_[^a-z])/ contained
 hi def link ponyErrUserMethod   Error
-syn match   ponyUserMethod      /\v[_a-zA-Z]\w*/ contained contains=ponyErrUserMethod nextgroup=ponyMethodArguments,ponyBracketT2 skipwhite skipempty
+syn match   ponyUserMethod      /\v[_a-zA-Z]\w*/ contained contains=ponyErrUserMethod nextgroup=ponyGeneric,ponyMethodArguments,ponyBracketT2 skipwhite
 hi def link ponyUserMethod      Function
-syn match   ponyForeignFunction /\v[_a-zA-Z]\w*/ contained
+syn match   ponyForeignFunction /\v[_a-zA-Z]\w*/ contained nextgroup=ponyGeneric skipwhite
 hi def link ponyForeignFunction Macro
 
 syn keyword ponyBoolean         true false
@@ -75,7 +75,7 @@ syn region  ponyBracketT2       matchgroup=ponyBracket start=/\[/ end=/\]/ conta
 syn region  ponyBracketT3       matchgroup=ponyBracket start=/{/ end=/}/ contained contains=@ponyComments,@ponyKeyword,@ponyType,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT skipwhite
 syn cluster ponyBracketT        contains=ponyBracketT\d
 
-syn region  ponyGeneric         matchgroup=ponyBracket start=/\[/ end=/\]/ contains=@ponyComments,@ponyKeyword,@ponyType,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma nextgroup=ponyArgument skipwhite
+syn region  ponyGeneric         matchgroup=ponyBracket start=/\[/ end=/\]/ contained contains=@ponyComments,@ponyKeyword,@ponyType,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma nextgroup=ponyArgument skipwhite
 
 syn region  ponyArgument        matchgroup=ponyBracket start=/(/ end=/)/ contained contains=TOP nextgroup=ponyArgument skipwhite
 
@@ -125,7 +125,7 @@ syn keyword ponyBuiltinType     AmbientAuth Any Array ArrayKeys ArrayPairs
                           \     SourceLoc StdStream Stdin StdinNotify String
                           \     StringBytes StringRunes Stringable U128 U16
                           \     U32 U64 U8 ULong USize Unsigned
-                          \     nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT,ponyArgument skipwhite
+                          \     nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT,ponyGeneric,ponyArgument skipwhite
 hi def link ponyBuiltinType     Type
 
 syn keyword ponyKwControl       end if else do then elseif match while for in
