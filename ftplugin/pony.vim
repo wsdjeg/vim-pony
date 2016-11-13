@@ -1,7 +1,7 @@
 " Vim filetype plugin file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2016 October 14
+" Last Change:  2016 November 13
 
 if exists('b:did_ftplugin')
   finish
@@ -15,8 +15,8 @@ setlocal comments=://,nsr:/*,mb:*,ex:*/
 setlocal commentstring=/*%s*/
 setlocal formatoptions-=t fo+=c fo+=r fo+=o fo+=q fo+=l fo+=j
 
-setlocal path=
-setlocal includeexpr=
+"setlocal path=
+"setlocal includeexpr=
 setlocal include=\\v^\\s*use\\_s+%(\\i+\\_s*\\=\\_s*)?"\\zs[^"]*\\ze"
 setlocal define=\\v^\\s*%(actor\|class\|struct\|primitive\|trait\|interface\|type\|new\|be\|fun\|let\|var\|embed\|use\|for\\_s+%(\\i+\\_s*,\\_s*)*\|with\\_s+%(\\i+\\_s*,\\_s*)*)\|(<\\i+\\_s*:\\_s*\\i+)@=
 setlocal isident=@,48-57,_,39
