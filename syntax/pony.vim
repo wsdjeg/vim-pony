@@ -21,7 +21,7 @@ hi def link ponyErrSymbol       Error
 syn match   ponyErrNumGroup     /__\+/ contained
 hi def link ponyErrNumGroup     Error
 
-syn match   ponyPeriodComma     /[.,]/ nextgroup=ponyErrOperator skipwhite
+syn match   ponyPeriodComma     /[.,;]/ nextgroup=ponyErrOperator skipwhite
 hi def link ponyPeriodComma     Operator
 
 syn match   ponyBracket         /[{[()\]}]/
