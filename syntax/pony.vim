@@ -1,7 +1,7 @@
 " Vim syntax file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2016 November 13
+" Last Change:  2016 November 14
 
 if exists('b:current_syntax')
   finish
@@ -14,9 +14,6 @@ set cpo&vim
 syn case match
 
 syn sync match ponySync grouphere NONE /\v^\s*%(actor|class|struct|primitive|trait|interface|new|be|fun|let|var|embed|use)>/
-
-syn match   ponyErrFFI          /\v\w>(\s*\[)@!/
-hi def link ponyErrFFI          Error
 
 syn match   ponyErrSymbol       /['^!]/
 hi def link ponyErrSymbol       Error
@@ -63,7 +60,7 @@ syn match   ponyErrUserMethod   /\v_>|<%([^_a-z]|_[^a-z])/ contained
 hi def link ponyErrUserMethod   Error
 syn match   ponyUserMethod      /\v[_a-zA-Z]\w*/ contained contains=ponyErrUserMethod nextgroup=ponyMethodArguments,ponyBracketT2 skipwhite skipempty
 hi def link ponyUserMethod      Function
-syn match   ponyForeignFunction /\v[_a-zA-Z]\w*/ contained contains=ponyErrFFI
+syn match   ponyForeignFunction /\v[_a-zA-Z]\w*/ contained
 hi def link ponyForeignFunction Macro
 
 syn keyword ponyBoolean         true false
