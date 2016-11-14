@@ -15,7 +15,7 @@ syn case match
 
 syn sync match ponySync grouphere NONE /\v^\s*%(actor|class|struct|primitive|trait|interface|new|be|fun|let|var|embed|use)>/
 
-syn match   ponyErrSymbol       /['^!]/
+syn match   ponyErrSymbol       /['^!$&\`]/
 hi def link ponyErrSymbol       Error
 
 syn match   ponyErrNumGroup     /__\+/ contained
