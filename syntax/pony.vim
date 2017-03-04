@@ -1,7 +1,7 @@
 " Vim syntax file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2016 November 14
+" Last Change:  2017 March 4
 
 if exists('b:current_syntax')
   finish
@@ -173,16 +173,20 @@ syn cluster ponyComments        contains=ponyNestedComment,ponyComment
 
 syn match   ponyErrEscape       /\\\_.\?\_s*/ contained
 hi def link ponyErrEscape       Error
-syn match   ponyEscape          /\\[abefnrtv"'\\0]/ contained
+syn match   ponyEscapeSQuote    /\\'/ contained
+hi def link ponyEscapeSQuote    SpecialChar
+syn match   ponyEscapeDQuote    /\\"/ contained
+hi def link ponyEscapeDQuote    SpecialChar
+syn match   ponyEscape          /\\[abefnrtv\\0]/ contained
 syn match   ponyEscape          /\v\\x\x{2}/ contained
 syn match   ponyEscape          /\v\\u\x{4}/ contained
 syn match   ponyEscape          /\v\\U\x{6}/ contained
 hi def link ponyEscape          SpecialChar
 
-syn region  ponyCharacter       matchgroup=ponyCharacterX start=/\w\@<!'/ skip=/\\./ end=/'/ contains=ponyEscape,ponyErrEscape
+syn region  ponyCharacter       matchgroup=ponyCharacterX start=/\w\@<!'/ skip=/\\./ end=/'/ contains=ponyEscapeSQuote,ponyEscape,ponyErrEscape
 hi def link ponyCharacter       Character
 
-syn region  ponyString          matchgroup=ponyStringX start=/"/ skip=/\\./ end=/"/ contains=ponyEscape,ponyErrEscape
+syn region  ponyString          matchgroup=ponyStringX start=/"/ skip=/\\./ end=/"/ contains=ponyEscapeDQuote,ponyEscape,ponyErrEscape
 hi def link ponyString          String
 syn region  ponyDocumentString  matchgroup=ponyDocumentStringX start=/"\ze""/ end=/"""*\zs"/
 hi def link ponyDocumentString  String
