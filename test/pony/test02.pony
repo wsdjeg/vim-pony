@@ -19,7 +19,7 @@ actor Main
 """
 world
 """
-  new hi(env: Env,
+  new hi(env''': Env,
 x: String,
   s: String)
  => 3
@@ -28,7 +28,7 @@ x: String,
     /**
    * comment
        */
-    let s = "hi"
+    let s''''''''''' = "hi"
 "hi"
 let fn = lambda (s: String): Bool => x.size() > 3 end
 let k = Main(env)
