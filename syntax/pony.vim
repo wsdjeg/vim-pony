@@ -1,7 +1,7 @@
 " Vim syntax file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2017 March 4
+" Last Change:  2017 April 18
 
 if exists('b:current_syntax')
   finish
@@ -26,7 +26,7 @@ hi def link ponyPeriodComma     Operator
 
 syn match   ponyBracket         /[{[()\]}]/
 
-syn match   ponyNormal          /\v_?[_a-z]\w*'?/ nextgroup=ponyGeneric skipwhite
+syn match   ponyNormal          /\v_?[_a-z]\w*'*/ nextgroup=ponyGeneric skipwhite
 
 syn match   ponyInteger         /\v%(\d+_*)+/ contains=ponyErrNumGroup
 syn match   ponyErrIntDec       /\v(0[xX])@<=[_.g-zG-Z]/
@@ -46,7 +46,7 @@ hi def link ponyFloat           Float
 
 syn match   ponyErrUserVariable /\v_>|<%([^_a-z]|_[^a-z])/ contained
 hi def link ponyErrUserVariable Error
-syn match   ponyUserVariable    /\v[_a-zA-Z]\w*'?/ contained contains=ponyErrUserVariable
+syn match   ponyUserVariable    /\v[_a-zA-Z]\w*'*/ contained contains=ponyErrUserVariable
 hi def link ponyUserVariable    Identifier
 syn match   ponyErrUserPackage  /\<[^a-z]/ contained
 hi def link ponyErrUserPackage  Error
