@@ -26,7 +26,9 @@ hi def link ponyPeriodComma     Operator
 
 syn match   ponyBracket         /[{[()\]}]/
 
-syn match   ponyNormal          /\v_?[_a-z]\w*'*/ nextgroup=ponyGeneric skipwhite
+syn match   ponyErrNormal       /\v_>|<%([^_a-z]|_[^a-z])|__+/ contained
+hi def link ponyErrNormal       Error
+syn match   ponyNormal          /\v_?[_a-z]\w*'*/ contains=ponyErrNormal nextgroup=ponyGeneric skipwhite
 
 syn match   ponyInteger         /\v%(\d+_*)+/ contains=ponyErrNumGroup
 syn match   ponyErrIntDec       /\v(0[xX])@<=[_.g-zG-Z]/
@@ -44,7 +46,7 @@ syn match   ponyFloat           /\v%(\d+_*)+[eE][-+]?%(\d+_*)+/ contains=ponyErr
 syn match   ponyFloat           /\v%(\d+_*)+\.%(\d+_*)+%([eE][-+]?%(\d+_*)+)?/ contains=ponyErrNumGroup
 hi def link ponyFloat           Float
 
-syn match   ponyErrUserVariable /\v_>|<%([^_a-z]|_[^a-z])/ contained
+syn match   ponyErrUserVariable /\v_>|<%([^_a-z]|_[^a-z])|__+/ contained
 hi def link ponyErrUserVariable Error
 syn match   ponyUserVariable    /\v[_a-zA-Z]\w*'*/ contained contains=ponyErrUserVariable
 hi def link ponyUserVariable    Identifier
@@ -52,11 +54,11 @@ syn match   ponyErrUserPackage  /\<[^a-z]/ contained
 hi def link ponyErrUserPackage  Error
 syn match   ponyUserPackage     /\v[_a-zA-Z]\w*/ contained contains=ponyErrUserPackage
 hi def link ponyUserPackage     Identifier
-syn match   ponyErrUserType     /\v_>|<%([^_A-Z]|_[^A-Z])/ contained
+syn match   ponyErrUserType     /\v_>|\a@<=_|<%([^_A-Z]|_[^A-Z])/ contained
 hi def link ponyErrUserType     Error
 syn match   ponyUserType2       /\v[_a-zA-Z]\w*/ contained contains=ponyErrUserType nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT,ponyGeneric,ponyArgument skipwhite
 syn match   ponyUserType        /\v_?[A-Z]\w*/ contains=ponyErrUserType nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT,ponyGeneric,ponyArgument skipwhite
-syn match   ponyErrUserMethod   /\v_>|<%([^_a-z]|_[^a-z])/ contained
+syn match   ponyErrUserMethod   /\v_>|<%([^_a-z]|_[^a-z])|__+/ contained
 hi def link ponyErrUserMethod   Error
 syn match   ponyUserMethod      /\v[_a-zA-Z]\w*/ contained contains=ponyErrUserMethod nextgroup=ponyGeneric,ponyArgument,ponyBracketT2 skipwhite
 hi def link ponyUserMethod      Function
