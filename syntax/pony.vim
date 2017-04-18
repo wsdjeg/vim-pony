@@ -73,7 +73,7 @@ syn region  ponyBracketT2       matchgroup=ponyBracket start=/\[/ end=/\]/ conta
 syn region  ponyBracketT3       matchgroup=ponyBracket start=/{/ end=/}/ contained contains=@ponyComments,@ponyKeyword,@ponyType,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT,ponyArgument skipwhite
 syn cluster ponyBracketT        contains=ponyBracketT\d
 
-syn region  ponyGeneric         matchgroup=ponyBracket start=/\[/ end=/\]/ contained contains=@ponyComments,@ponyKeyword,@ponyType,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma nextgroup=ponyArgument skipwhite
+syn region  ponyGeneric         matchgroup=ponyBracketT2 start=/\[/ end=/\]/ contained contains=@ponyComments,@ponyKeyword,@ponyType,@ponyBracketT,@ponyTypeOperator,ponySymbol,ponyPeriodComma nextgroup=ponyTypeSuffix,ponyTypeOperator2,ponyKwOperatorT,ponyArgument skipwhite
 
 syn region  ponyArgument        matchgroup=ponyBracket start=/(/ end=/)/ contained contains=TOP nextgroup=ponyArgument skipwhite
 
