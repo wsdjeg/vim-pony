@@ -23,6 +23,17 @@ world
 x: String,
   s: String)
  => 3
+iftype A <: B then
+  // Generate this block if A is a subtype of B.
+  // A is constrained to B in this block.
+    elseiftype B <: (C & D)
+                else
+  // Generate this block otherwise
+  //if
+  if true then
+  else
+  end
+                end
 
   fun ref no() =>
     /**
@@ -46,6 +57,8 @@ fun ref dispose() => None
 end
 end
 end
+fun foo(x: A): B iftype A <: B => // A is constrained to B in this specialisation.
+  "great"
 
   new create(env: Env) =>
     let child_pid = @fork[I32]()
@@ -84,3 +97,5 @@ end
 """A""""
 """"""""
 """B""""
+        fun foo(x: A): B => // Default function. Optional.
+          None

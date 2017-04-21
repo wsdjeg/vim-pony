@@ -83,12 +83,12 @@ hi def link ponyTypeSuffix      StorageClass
 syn match   ponyTypeOperator1   /[&|]/ contained nextgroup=@ponyBracketT,@ponyKeyword,@ponyType skipwhite skipempty
 hi def link ponyTypeOperator1   Operator
 
-syn match   ponyTypeOperator2   /->/ contained nextgroup=@ponyBracketT,@ponyKeyword,@ponyType skipwhite skipempty
+syn match   ponyTypeOperator2   /->\|<:/ contained nextgroup=@ponyBracketT,@ponyKeyword,@ponyType skipwhite skipempty
 hi def link ponyTypeOperator2   Operator
 
 syn cluster ponyTypeOperator    contains=ponyTypeOperator\d
 
-syn match   ponyErrOperator     /[-.]>\|\%(==\|!=\|<<\|>>\|<=\|>=\|[+*/%<>]\)\~\?\|[~.,]/ contained nextgroup=ponyErrOperator skipwhite
+syn match   ponyErrOperator     /[-.]>\|<:\|\%(==\|!=\|<<\|>>\|<=\|>=\|[+*/%<>]\)\~\?\|[~.,]/ contained nextgroup=ponyErrOperator skipwhite
 hi def link ponyErrOperator     Error
 
 syn match   ponyObjectOperator  /\%(==\|!=\|<<\|>>\|<=\|>=\|[+\-*/%<>]\)\~\?\|\~\|\.>/ nextgroup=ponyErrOperator skipwhite
@@ -129,7 +129,7 @@ hi def link ponyBuiltinType     Type
 syn keyword ponyKwControl       end if else do then elseif match while for in
                         \       repeat until ifdef try with recover return
                         \       break continue error compile_intrinsic
-                        \       compile_error
+                        \       compile_error iftype elseiftype
 hi def link ponyKwControl       Keyword
 
 syn keyword ponyCaseGuard       if contained containedin=ponyMatchCase

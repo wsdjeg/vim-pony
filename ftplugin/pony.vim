@@ -26,7 +26,7 @@ setlocal matchpairs=(:),{:},[:]
 
 let b:match_ignorecase = 0
 let b:match_skip = 's:Comment\|String\|Character\|CaseGuard'
-let b:match_words = '\v<%(ifdef|if|match|while|for|repeat|try|with|recover|object|lambda)>\m:\v<%(then|elseif|else|until|do|in)>|\|\m:\<end\>,(:),\[:\],{:}'
+let b:match_words = '\v<%(ifdef|if|match|while|for|repeat|try|with|recover|object|lambda|iftype)>\m:\v<%(then|elseif|else|until|do|in|elseiftype)>|\|\m:\<end\>,(:),\[:\],{:}'
 " TODO: for more concise behavior
 "let b:match_words = 'pony#GetMatchWords()'
 source $VIMRUNTIME/macros/matchit.vim

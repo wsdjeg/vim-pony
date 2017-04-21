@@ -12,10 +12,10 @@ set cpo&vim
 let s:skip2 = '<SID>InLiteral(line("."), col(".")) || <SID>InComment(line("."), col(".")) == 1'
 let s:skip3 = '!<SID>InKeyword(line("."), col("."))'
 let s:skip4 = '!<SID>InBracket(line("."), col("."))'
-let s:cfstart = '\v<%(ifdef|if|match|while|for|repeat|try|with|recover|object|lambda)>'
-let s:cfmiddle = '\v<%(then|elseif|else|until|do|in)>|\|'
+let s:cfstart = '\v<%(ifdef|if|match|while|for|repeat|try|with|recover|object|lambda|iftype)>'
+let s:cfmiddle = '\v<%(then|elseif|else|until|do|in|elseiftype)>|\|'
 let s:cfend = '\v<end>'
-let s:bstartp = '\v<%(ifdef|if|then|elseif|else|(match)|while|for|in|do|try|with|recover|repeat|until|(object)|lambda)>'
+let s:bstartp = '\v<%(ifdef|if|then|elseif|else|(match)|while|for|in|do|try|with|recover|repeat|until|(object)|lambda|iftype|elseiftype)>'
 
 function! pony#Indent()
   if v:lnum <= 1
@@ -271,7 +271,7 @@ function! pony#Indent()
   endif
 
   " If this line ends (part of) a control flow,
-  if l:line =~# '\v^\s*%(end|elseif|else|then|in|do|until)>'
+  if l:line =~# '\v^\s*%(end|elseif|else|then|in|do|until|elseiftype)>'
     " find the start or middle of the control block,
     call cursor(v:lnum, 1)
     let l:start = searchpairpos(s:cfstart, s:cfmiddle, s:cfend, 'bnW', s:skip3)
@@ -358,7 +358,7 @@ function! s:IsContinued(lnum)
   "  |     2
   return !s:InCommentOrLiteral(a:lnum, l:width)
         \ && (l:line =~# '\v<%(and|or|xor|is|isnt|as|not|consume|addressof|digestof)\s*$'
-        \ || l:line =~# '\v%([=\-.]\>|[<!=>]\=|\<\<|\>\>|[+\-*/%<>.,|:@~])\s*$'
+        \ || l:line =~# '\v%([=\-.]\>|[<!=>]\=\~?|\<\<\~?|\>\>\~?|\<:|[+\-*/%<>]\~?|[.,|:@~])\s*$'
         \ )
 endfunction
 
