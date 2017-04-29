@@ -9,6 +9,6 @@ Simple Vim configuration for [Ponylang].
 * ...
 
 
-You can install this with plugin managers like [Vundle].
+You can install this with plugin managers like [vim-plug].
 
-[Vundle]: https://github.com/VundleVim/Vundle.vim
+[vim-plug]: https://github.com/junegunn/vim-plug
