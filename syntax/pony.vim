@@ -1,7 +1,7 @@
 " Vim syntax file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2017 April 18
+" Last Change:  2017 May 11
 
 if exists('b:current_syntax')
   finish
@@ -21,7 +21,8 @@ hi def link ponyErrSymbol       Error
 syn match   ponyErrNumGroup     /__\+/ contained
 hi def link ponyErrNumGroup     Error
 
-syn match   ponyPeriodComma     /[.,;]/ nextgroup=ponyErrOperator skipwhite
+syn match   ponyPeriodComma     /,/ nextgroup=ponyEllipsis,ponyErrOperator skipwhite
+syn match   ponyPeriodComma     /[.;]/ nextgroup=ponyErrOperator skipwhite
 hi def link ponyPeriodComma     Operator
 
 syn match   ponyBracket         /[{[()\]}]/
@@ -101,10 +102,13 @@ syn keyword ponyKwOperator      as nextgroup=@ponyBracketT,@ponyKeyword,@ponyTyp
 syn keyword ponyKwOperator      and or xor not is isnt consume addressof digestof
 hi def link ponyKwOperator      Operator
 
-syn match   ponySymbol          /=>\|\.\{3}\|[?#]/
+syn match   ponySymbol          /=>\|[?#]/
 syn match   ponySymbol          /@/ nextgroup=ponyForeignFunction skipwhite skipempty
 syn match   ponySymbol          /:/ nextgroup=@ponyKeyword,@ponyType,@ponyBracketT skipwhite skipempty
 hi def link ponySymbol          Special
+
+syn match   ponyEllipsis        /\.\{3}/ contained containedin=ponyArgument
+hi def link ponyEllipsis        Special
 
 syn region  ponyLambda          matchgroup=ponyBracketLambda start=/{/ end=/}/ contains=ponyArgument,@ponyComments,@ponyKeyword,@ponyType,@ponyTypeOperator,ponySymbol,ponyPeriodComma,ponyLambdaBody nextgroup=ponyArgument skipwhite
 syn match   ponyLambdaBody      /=>\_.*}/me=e-1 contained contains=TOP
@@ -170,7 +174,6 @@ hi def link ponyKwFunction      Keyword
 syn cluster ponyKeyword         contains=ponyKw.*,ponyBoolean,ponyBuiltinType remove=ponyKwOperatorT,ponyKwFnCapability,ponyKwBranchHead
 syn cluster ponyType            contains=ponyBuiltinType,ponyUserType,ponyNormal
 syn cluster ponyType2           contains=ponyBuiltinType,ponyUserType2
-syn cluster ponyValue           contains=ponyDocumentString,ponyString,ponyCharacter,ponyBoolean,ponyFloat,ponyInteger,@ponyKeyword,@ponyType2,ponyArgument
 syn cluster ponyComments        contains=ponyNestedComment,ponyComment
 
 syn match   ponyErrEscape       /\\\_.\?\_s*/ contained
