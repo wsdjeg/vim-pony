@@ -72,7 +72,7 @@ fun foo(x: A): B iftype A <: B => // A is constrained to B in this specialisatio
       env.exitcode(0)
             end
       | 0 if true =>
-      /*---- Note
+      /*/---- Note
      * Calling pony functions in the child is not thread-safe?
          * /*
        *  * TODO something /* XXX: hi */

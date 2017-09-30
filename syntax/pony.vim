@@ -211,7 +211,7 @@ syn cluster ponyCommentNote     contains=ponyCommentTodo,ponyCommentDamn,ponyCom
 
 syn match   ponyComment         @//.*$@ contains=@ponyCommentNote,ponyCommentX
 hi def link ponyComment         Comment
-syn region  ponyNestedComment   matchgroup=ponyNestedCommentX start=@/\ze\*@ end=@\*\zs/@ contains=ponyNestedComment,@ponyCommentNote keepend extend fold
+syn region  ponyNestedComment   matchgroup=ponyNestedCommentX start=@/\ze\*@ end=@\/\@<!\*\zs/@ contains=ponyNestedComment,@ponyCommentNote keepend extend fold
 hi def link ponyNestedComment   Comment
 
 " for indent check
