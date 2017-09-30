@@ -22,7 +22,8 @@ syn match   ponyErrNumGroup     /__\+/ contained
 hi def link ponyErrNumGroup     Error
 
 syn match   ponyPeriodComma     /,/ nextgroup=ponyEllipsis,ponyErrOperator skipwhite
-syn match   ponyPeriodComma     /[.;]/ nextgroup=ponyErrOperator skipwhite
+syn match   ponyPeriodComma     /\./ nextgroup=ponyTupleElement,ponyErrOperator skipwhite
+syn match   ponyPeriodComma     /;/ nextgroup=ponyErrOperator skipwhite
 hi def link ponyPeriodComma     Operator
 
 syn match   ponyBracket         /[{[()\]}]/
@@ -65,6 +66,10 @@ syn match   ponyUserMethod      /\v[_a-zA-Z]\w*/ contained contains=ponyErrUserM
 hi def link ponyUserMethod      Function
 syn match   ponyForeignFunction /\v[_a-zA-Z]\w*/ contained nextgroup=ponyGeneric skipwhite
 hi def link ponyForeignFunction Macro
+syn match   ponyErrTupleElement /\v_0+>/ contained
+hi def link ponyErrTupleElement Error
+syn match   ponyTupleElement    /\v_\d+\w@!/ contained contains=ponyErrTupleElement
+hi def link ponyTupleElement    Normal
 
 syn keyword ponyBoolean         true false
 hi def link ponyBoolean         Boolean
