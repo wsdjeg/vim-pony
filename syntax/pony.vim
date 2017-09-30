@@ -1,7 +1,6 @@
 " Vim syntax file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2017 May 11
 
 if exists('b:current_syntax')
   finish

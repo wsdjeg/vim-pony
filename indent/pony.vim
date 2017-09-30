@@ -1,7 +1,6 @@
 " Vim indent file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2016 November 2
 
 if exists('b:did_indent')
   finish

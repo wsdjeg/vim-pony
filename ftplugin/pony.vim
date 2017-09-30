@@ -1,7 +1,6 @@
 " Vim filetype plugin file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2016 November 13
 
 if exists('b:did_ftplugin')
   finish

@@ -1,7 +1,6 @@
 " Vim plugin file
 " Language:     Pony
 " Maintainer:   Jak Wings
-" Last Change:  2016 November 12
 
 " TODO: Make sure echomsg is off for release.
 let s:cpo_save = &cpo
