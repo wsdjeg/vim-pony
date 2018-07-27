@@ -496,8 +496,9 @@ function! s:OuterPos(x, y)
   end
 endfunction
 
-function! pony#ClearTrailingSpace(all, alt)
-  if !&modifiable || &readonly
+function! pony#ClearTrailingSpace(all, alt, ...)
+  let l:force = (a:0 > 0 ? a:1 : 0)
+  if !l:force && (&readonly || !&modifiable || !&modified)
     return
   endif
   if a:all

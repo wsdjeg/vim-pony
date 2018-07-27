@@ -24,7 +24,7 @@ augroup pony
   autocmd CursorHold <buffer> call pony#ClearTrailingSpace(1, 1)
   "autocmd InsertEnter <buffer> call pony#ClearTrailingSpace(0, 0)
   autocmd InsertLeave <buffer> call pony#ClearTrailingSpace(0, 1)
-  autocmd BufWritePre <buffer> call pony#ClearTrailingSpace(1, 1)
+  autocmd BufWritePre <buffer> call pony#ClearTrailingSpace(1, 0, 1)
 augroup END
 
 let b:undo_indent = 'set lisp< cindent< autoindent< smartindent< indentexpr< indentkeys< cinkeys< cinwords<'
