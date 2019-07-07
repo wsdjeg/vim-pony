@@ -1,14 +1,8 @@
-Simple Vim configuration for [Ponylang].
-
-[Ponylang]: https://github.com/ponylang/ponyc
+### SpaceVim lang#pony layer
 
 * Syntax Highlighting
 * Auto Indentation
 * Bracket/Keyword Matching
 * Trailing Space Removal
-* ...
+* Syntax lint
 
-
-You can install this with plugin managers like [vim-plug].
-
-[vim-plug]: https://github.com/junegunn/vim-plug
